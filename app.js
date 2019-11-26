@@ -7,7 +7,13 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+// 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
+var connect = require('./schemas');
+
 var app = express();
+
+// 몽고디비: express객체 생긴 후 몽고디비 연결
+connect();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
