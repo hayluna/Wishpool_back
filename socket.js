@@ -17,21 +17,14 @@ module.exports = (server) =>{
         });
         socket.on('reply', (data)=>{ //on: reply란 이름의 통신을 대기중이다
             console.log(data);
-            // if(data){
-            //     data = false;
-            // }else{
-            //     data = true;
-            // }
-            // socket.emit('news', data);
-            socket.interval = setInterval(()=>{
-                if(data){
-                    data = false;
-                }else{
-                    data = true;
-                }
-                socket.emit('news', data);
-                // socket.emit('news', 'Hello Socket.IO'); //emit: news란 이름의 통신으로 보낸다. 클라이언트로 내보낼 메시지:Hello Socket.IO
-            },3000);
+            // socket.interval = setInterval(()=>{
+            //     if(data){
+            //         data = false;
+            //     }else{
+            //         data = true;
+            //     }
+            //     socket.emit('news', data);
+            // },3000);
         });
         
     })
