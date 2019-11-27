@@ -17,14 +17,14 @@ module.exports = (server) =>{
         });
         socket.on('reply', (data)=>{ //on: reply란 이름의 통신을 대기중이다
             console.log(data);
-            // socket.interval = setInterval(()=>{
-            //     if(data){
-            //         data = false;
-            //     }else{
-            //         data = true;
-            //     }
-            //     socket.emit('news', data);
-            // },3000);
+            socket.interval = setInterval(()=>{
+                if(data){
+                    data = false;
+                }else{
+                    data = true;
+                }
+                socket.emit('news', data);
+            },3000);
         });
         
     })
