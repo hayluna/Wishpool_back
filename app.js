@@ -32,12 +32,11 @@ connect();
 
 //웹소켓통신을 위해서는 쌍방 cors설정이 되어야한다.
 //클라이언트의 주소를 허용한다.
-var corsOptions = {
-  origin: 'http://localhost:8080',
-  credentials: true };
+// var corsOptions = {
+//   origin: '*',};
 
-app.use(cors(corsOptions));
-// app.use(cors()) //cors use
+// app.use(cors(corsOptions));
+app.use(cors()) //cors use
 
 
 // view engine setup
