@@ -1,59 +1,64 @@
 const mongoose = require('mongoose');
 
-const { Schema } = mongoose;
+const {Schema} = mongoose;
 
 const itemSchema = new Schema({
-    itemName: {
-        type: String,
+    itemName:{
+        type:String,
+        required: true,
+        // unique: true,
+    },
+    itemPrice:{
+        type:String,
         required: true,
     },
-    itemPrice: {
-        type: Number,
-        required: false,
-    },
-    itemLink: {
-        type: String,
-        required: false,
-    },
-    itemRank: {
-        type: Number,
-        required : false,
-    },
-    visibleTo: {
-        type: String,
+    itemLink:{
+        type:String,
         required: true,
-        default: 'f'
+        // unique: true,
     },
-    itemImgPath: {
-        type: String,
+    itemRank:{
+        type:String,
         required: true,
-        default: 'itemImgPath',
     },
-    itemImgName: {
-        type: String,
+    visibleTo:{
+        type:String,
         required: true,
-        default: 'itemImgName'
+        unique: false,
     },
-    purchasedBy: {
-        type: String,
-        required: false,
+    itemImgPath:{
+        type:String,
+        required: true,
     },
-    itemMemo: {
-        type: String,
-        required: false,
+    itemImgName:{
+        type:Date,
+        required: true,
     },
-    purchaseDate: {
-        type: Date,
-        required: false,
+    purchasedBy:{
+        type:Date,
+        required: true,
+        default:Date.now()
     },
-    evalMemo: {
-        type: String,
-        required: false,
+    itemMemo:{
+        type:String,
+        required: true,
+        // unique: true,
+        default:'profileImgPath'
+    },
+    purchaseDate:{
+        type:String,
+        required: true,
+        default:'profileImgName'
+    },
+    evalMemo:{
+        type:String,
+        required: true,
     },
     categoryId:{
-        type: String,
-        required: true
-    }
+        type:Array,
+        required: false,
+    },
+    
 });
 
 module.exports = mongoose.model('Item', itemSchema); 

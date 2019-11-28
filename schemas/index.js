@@ -32,4 +32,7 @@ module.exports = () =>{
     });
 
     require('./user'); // == userSchema
+    require('./category'); 
+    require('./group'); 
+    require('./item'); 
 }
