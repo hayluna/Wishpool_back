@@ -26,6 +26,13 @@ module.exports = (server) =>{
                 socket.emit('news', data);
             },3000);
         });
+        socket.on('purchasedBy', (data)=>{ //on: reply란 이름의 통신을 대기중이다
+            if(data === 'cancel'){
+                //db에 구매한사람 정보 ''로 바꾸기
+            }else{
+                //db에 data(구매한사람)정보 입력
+            }
+        });
         
     })
 }
