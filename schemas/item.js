@@ -46,17 +46,17 @@ const itemSchema = new Schema({
     },
     purchaseDate: {
         type: Date,
-        required: true,
+        required: false,
     },
     evalMemo: {
         type: String,
         required: false,
     },
-    categoryId: {
-        type: ObjectId,
-        required: true,
-        ref:'Category'
-    },
+    // categoryId: {
+    //     type: ObjectId,
+    //     required: true,
+    //     ref:'Category'
+    // },
 });
 
 module.exports = mongoose.model('Item', itemSchema);
