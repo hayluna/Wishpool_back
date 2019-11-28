@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 
-const {Schema} = mongoose;
+const { Schema } = mongoose;
+const { Types: { ObjectId } } = Schema;
 
 const itemSchema = new Schema({
     itemName:{
         type:String,
         required: true,
-        // unique: true,
+        unique: false
     },
     itemPrice:{
         type:String,
@@ -17,9 +18,9 @@ const itemSchema = new Schema({
         required: true,
         // unique: true,
     },
-    itemRank:{
-        type:String,
-        required: true,
+    itemRank: {
+        type: Number,
+        required: false,
     },
     visibleTo:{
         type:String,
@@ -29,6 +30,7 @@ const itemSchema = new Schema({
     itemImgPath:{
         type:String,
         required: true,
+        default: 'itemImgPath'
     },
     itemImgName:{
         type:Date,
@@ -45,20 +47,19 @@ const itemSchema = new Schema({
         // unique: true,
         default:'profileImgPath'
     },
-    purchaseDate:{
-        type:String,
+    purchaseDate: {
+        type: Date,
         required: true,
-        default:'profileImgName'
     },
     evalMemo:{
         type:String,
         required: true,
     },
-    categoryId:{
-        type:Array,
-        required: false,
+    categoryId: {
+        type: ObjectId,
+        required: true,
+        ref:'Category'
     },
-    
 });
 
-module.exports = mongoose.model('Item', itemSchema); 
+module.exports = mongoose.model('Item', itemSchema);

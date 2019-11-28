@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var User = require('../schemas/user');
+var User = require('../schemas/category');
 
 router.get('/', function (req, res, next) {
   // User.find({})
