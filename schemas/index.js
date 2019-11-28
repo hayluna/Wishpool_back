@@ -33,12 +33,8 @@ module.exports = () =>{
 
     require('./item');
     require('./user'); // == userSchema
-<<<<<<< HEAD
     require('./category'); 
     require('./group'); 
     require('./item'); 
-=======
     require('./category');
-    require('./group');
->>>>>>> f830200c42f813ed99289955fe5c3736c59f3f59
 }

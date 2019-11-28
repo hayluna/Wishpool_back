@@ -18,7 +18,6 @@ require('./socket.js')(server); // 웹소켓 함수 실행
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var tempRouter = require('./routes/temp');
 
 // 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
 var connect = require('./schemas');
@@ -51,7 +50,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/temp', tempRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

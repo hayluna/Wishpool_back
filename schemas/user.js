@@ -60,7 +60,7 @@ const userSchema = new Schema({
     },
     profileMsg:{
         type:String,
-        required: true,
+        required: false,
     },
     followingId:{
         type:Array,
@@ -86,7 +86,6 @@ const userSchema = new Schema({
     },
     deleteAt:{
         type:Date,
-        default: Date.now,
     }
 });
 

@@ -39,7 +39,7 @@ const itemSchema = new Schema({
     purchasedBy:{
         type:Date,
         required: true,
-        default:Date.now()
+        default:Date.now
     },
     itemMemo:{
         type:String,
