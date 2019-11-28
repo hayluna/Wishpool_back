@@ -14,11 +14,13 @@ server.listen(3001, function(){
 
 //socket연결 및 on, event행동정보가 담긴 socket.js모듈을 불러온다.
 //socket.js모듈은 웹서버를 파라미터로 받는 함수이다.
-require('./socket.js')(server); // 웹소켓 함수 실행
+// require('./socket.js')(server); // 웹소켓 함수 실행
 
+var categoryRouter = require('./routes/category');
+var groupRouter = require('./routes/group');
 var indexRouter = require('./routes/index');
+var itemRouter = require('./routes/item');
 var usersRouter = require('./routes/users');
-var tempRouter = require('./routes/temp');
 
 // 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
 var connect = require('./schemas');
@@ -49,9 +51,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/category', categoryRouter);
+app.use('/group', groupRouter);
 app.use('/', indexRouter);
+app.use('/item', itemRouter);
 app.use('/users', usersRouter);
-app.use('/temp', tempRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
