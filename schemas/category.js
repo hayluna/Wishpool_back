@@ -38,3 +38,5 @@ const categorySchema = new Schema({
         unique: true,
     },
 })
+
+module.exports = mongoose.model('Category', categorySchema); 

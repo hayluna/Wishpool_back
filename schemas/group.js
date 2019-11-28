@@ -18,4 +18,4 @@ const groupSchema = new Schema({
     } //foreign key : userId, groupd 소유자
 });
 
-module.exports = mongoose.model('Item', groupSchema); 
+module.exports = mongoose.model('Group', groupSchema); 

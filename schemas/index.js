@@ -31,5 +31,8 @@ module.exports = () =>{
         connect();
     });
 
+    require('./item');
     require('./user'); // == userSchema
+    require('./category');
+    require('./group');
 }
