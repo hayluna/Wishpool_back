@@ -40,18 +40,31 @@ router.get('/', (req,res,next)=>{
 // 회원가입
 router.post('/',(req,res,next)=> {
   
-  User.create({
-    userId: req.body.userId,
+  const user = new User({
     userName:req.body.userName,
-    email:req.body.email,
+    userId:req.body.userId,
     password:req.body.password,
+    email:req.body.email,
     phone:req.body.phone,
     nickName:req.body.nickName,
-    birth:req.body.birth,
-    userState:true
-    // createdAt:req.body.date
-  })
+    profileImgPath:req.body.profileImgPath,
+    entryType:req.body.entryType,
+    userState:req.body.userState,
 
+    
+
+  });
+  user.save()
+    .then(function(result){
+      console.log(result);
+      // 200으로 테스트(교재는 201)
+      res.status(201).json(result);
+
+    })
+    .catch(function (err) {
+      console.error(err);
+      next(err); 
+    });
 
 
 

@@ -86,6 +86,7 @@ const userSchema = new Schema({
     },
     deleteAt:{
         type:Date,
+        required: false,
     }
 });
 
