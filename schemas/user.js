@@ -11,12 +11,12 @@ const { Schema } = mongoose;
 
 //사용자 콜렉션 구조 모델 구현
 const userSchema = new Schema({
-    userid:{
+    userId:{
         type:String,
         required: true,
         unique: true,
     },
-    username:{
+    userName:{
         type:String,
         required: true,
     },
@@ -34,7 +34,7 @@ const userSchema = new Schema({
         required: true,
         unique: true,
     },
-    nickname:{
+    nickName:{
         type:String,
         required: true,
     },
@@ -72,7 +72,7 @@ const userSchema = new Schema({
     },
     entryType:{
         type:String,
-        required: ture,
+        required: true,
     },
     userState:{
         type:Boolean,
