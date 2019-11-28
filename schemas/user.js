@@ -23,16 +23,68 @@ const userSchema = new Schema({
     email:{
         type:String,
         required: true,
+        unique: true,
+    },
+    password:{
+        type:String,
+        required: true,
     },
     phone:{
         type:String,
         required: true,
+        unique: true,
     },
-    usestatecode:{
-        type:Number,
+    nickname:{
+        type:String,
         required: true,
     },
-    entrydate:{
+    birth:{
+        type:Date,
+        required: true,
+    },
+    entryDate:{
+        type:Date,
+        required: true,
+        default:Date.now()
+    },
+    profileImgPath:{
+        type:String,
+        required: true,
+        unique: true,
+        default:'profileImgPath'
+    },
+    profileImgName:{
+        type:String,
+        required: true,
+        default:'profileImgName'
+    },
+    profileMsg:{
+        type:String,
+        required: true,
+    },
+    followingId:{
+        type:Array,
+        required: false,
+    },
+    followerId:{
+        type:Array,
+        required: false,
+    },
+    entryType:{
+        type:String,
+        required: ture,
+    },
+    userState:{
+        type:Boolean,
+        required: true,
+        default: true
+    },
+    createdAt:{
+        type:Date,
+        required: true,
+        default: Date.now,
+    },
+    deleteAt:{
         type:Date,
         default: Date.now,
     }
