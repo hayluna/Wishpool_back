@@ -48,7 +48,10 @@ router.post('/',(req,res,next)=> {
     phone:req.body.phone,
     nickName:req.body.nickName,
     birth:req.body.birth,
-    userState:true
+    userState:true,
+    createdAt:'',
+    
+
     // createdAt:req.body.date
   })
 
