@@ -47,12 +47,9 @@ router.post('/',(req,res,next)=> {
     password:req.body.password,
     phone:req.body.phone,
     nickName:req.body.nickName,
-    birth:req.body.birth,
-    userState:true,
-    createdAt:'',
-    
+    birth:req.body.birth, // 여기까지 확인
+    entryType:req.body.entryType,
 
-    // createdAt:req.body.date
   })
 
 
