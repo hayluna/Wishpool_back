@@ -14,7 +14,7 @@ server.listen(3001, function(){
 
 //socket연결 및 on, event행동정보가 담긴 socket.js모듈을 불러온다.
 //socket.js모듈은 웹서버를 파라미터로 받는 함수이다.
-// require('./socket.js')(server); // 웹소켓 함수 실행
+require('./socket.js')(server); // 웹소켓 함수 실행
 
 var categoryRouter = require('./routes/category');
 var groupRouter = require('./routes/group');

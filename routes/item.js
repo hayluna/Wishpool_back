@@ -16,7 +16,13 @@ router.get('/', function (req, res, next) {
 
 //itemList.vue의 items에 넣을 내용
 router.get('/list', function(req, res, next) {
-
+    Item.find()
+    .then(items=>{
+        res.json(items);
+    })
+    .catch(e=>{
+        console.error(e);
+    })
 });
 
 //detail:id
@@ -60,9 +66,9 @@ router.patch('/modify/:id', function(req, res, next){
         // categoryId: 1
     };
     console.log(item);
-    item.update({ _id:req.params.id }, {
+    Item.update({ _id:req.params.id }, {
         $set: item
-    })
+    }).exec()
     // .then(result=>{
     //     return Item.populate(result, { path: 'categoryId'});
     // })
@@ -78,6 +84,19 @@ router.patch('/modify/:id', function(req, res, next){
     });
 });
 
+router.delete('/detail/:id', function(req, res, next){
+    const { id } = req.params;
+    Item.findByIdAndRemove(id).exec()
+    .then(result=>{
+        res.status(204).json({
+            code: 204,
+            msg: '아이템 삭제 성공'
+        });
+    }).catch(e=>{
+        console.error(e);
+        next(e);
+    })
+});
 //itemAdd.vue에서 생성된 내용 DB에 저장하기
 router.post('/add', function(req, res, next){
     console.log('아이템 추가 요청'+req.body);

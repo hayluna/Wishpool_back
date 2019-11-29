@@ -24,7 +24,6 @@ const itemSchema = new Schema({
     visibleTo: {
         type: String,
         required: true,
-        default: 'f'
     },
     itemImgPath: {
         type: String,
@@ -39,6 +38,7 @@ const itemSchema = new Schema({
     purchasedBy: {
         type: String,
         required: false,
+        default: ''
     },
     itemMemo: {
         type: String,
@@ -57,6 +57,7 @@ const itemSchema = new Schema({
     //     required: true,
     //     ref:'Category'
     // },
+
 });
 
 module.exports = mongoose.model('Item', itemSchema);
