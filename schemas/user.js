@@ -42,21 +42,16 @@ const userSchema = new Schema({
         type:Date,
         required: true,
     },
-    entryDate:{
-        type:Date,
-        required: true,
-        default:Date.now()
-    },
     profileImgPath:{
         type:String,
         required: true,
         unique: true,
-        default:'profileImgPath'
+        default:'기본값'
     },
     profileImgName:{
         type:String,
         required: true,
-        default:'profileImgName'
+        default:'기본값'
     },
     profileMsg:{
         type:String,
@@ -81,7 +76,7 @@ const userSchema = new Schema({
     },
     createdAt:{
         type:Date,
-        required: true,
+        required: false,
         default: Date.now,
     },
     deleteAt:{
