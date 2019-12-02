@@ -1,4 +1,5 @@
 const SocketIO = require('socket.io');
+const Item = require('./schemas/item');
 
 //함수형 모듈
 module.exports = (server) =>{
@@ -33,6 +34,21 @@ module.exports = (server) =>{
                 //db에 data(구매한사람)정보 입력
             }
         });
+        socket.on('reqList', (data)=>{
+
+            Item.find()
+            .then(items=>{
+                socket.emit('resList', items);
+            })
+            .catch(e=>{
+                console.error(e);
+            })
+            
+        });
+        
+        // socket.on('loadList', (data)=>{
+        //     socket.
+        // })
         
     })
 }
