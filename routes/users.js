@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const bcrypt =require('bcrypt');
-// const jwt = require('jsonwebtoken');
-// const { verifyToken } = require('./middlewares'); 
+const jwt = require('jsonwebtoken');
+const { verifyToken } = require('./middlewares'); 
 
 var User = require('../schemas/user');
 
@@ -72,11 +72,33 @@ router.post('/login',(req,res,next)=>{
       if(user){
         console.log('가입된사용자');
         console.log('user정보:'+ user);
-        // console.log('이용자정보:'+exitUser);
+
         // 비밀번호가 일치하는지 확인하기
+        // compareSync()는 암호화 된 비번과 입력된 비번을 비교
+        // 리턴값은 boolean
         const comparePwd = bcrypt.compareSync(req.body.password,user.password);
           if(comparePwd){
             console.log('일치여부'+ comparePwd);
+
+            // 비번이 일치하므로 토큰 발행
+            // 토큰에는 무슨 정보를 넣을까(비번,전화번호,이메일 빼고 전부??)
+            
+            const token = jwt.sign({
+              userId:user.userId,
+              nickName:user.nickName
+            },process.env.JWT_SECRET,{
+              expiresIn: '1m',
+              issuer:'wishlist'
+            });
+
+            console.log(token);
+            // 발행한 토큰을 클라이언트에게 전송(클라이언트는 로그인되면 토큰 수령)
+            // res.json으로 응답 보내는건 한 번만 해야 한다.****
+            // 한 번 보내는 응답에 응답 코드를 2번 이상 작성하면 에러발생
+            // [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+            // for문을 쓸 때도 주의하기(여러개가 따로따로 날아가면 안 된다. 반드시 묶어서 날리기)
+            return res.json({ code:200, result:token});
+            
             
           }else{
             console.log('불일치' + comparePwd);

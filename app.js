@@ -4,6 +4,15 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+//env파일 임포트 및 설정처리
+// js 토큰을 불러올 때 사용 될 .env파일을 설정
+// .env파일에 토큰 발급에 사용되는 중요한 정보가 있으므로
+// 반드시 .gitignore발입에 .env파일을 적어야 한다***
+// npm i dotenv를 반드시 해야 한다.
+require('dotenv').config();
+
+
+
 // 웹소켓 
 var server = require('http').createServer(app); //웹 소켓을 위한 새로운 서버를 만든다.
 
