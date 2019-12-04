@@ -4,6 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+require('dotenv').config();
+
+
+
 // 웹소켓 
 var server = require('http').createServer(app); //웹 소켓을 위한 새로운 서버를 만든다.
 

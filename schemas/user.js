@@ -45,7 +45,7 @@ const userSchema = new Schema({
     profileImgPath:{
         type:String,
         required: true,
-        unique: true,
+        unique: false,
         default:'기본값'
     },
     profileImgName:{
