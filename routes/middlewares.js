@@ -1,36 +1,34 @@
+//JWT 모듈을 추가한다.
 const jwt = require('jsonwebtoken');
 
-// JWT 토큰 유효성 검사 공통 모듈
-// 이 파일은 토큰이 발행 된 후에 클라이언트 토큰과 비교할 때 사용된다.
-exports.verifyToken = (req,res,next) => {
+//JWT토큰 유효성 검사 공통모듈
+exports.verifyToken = (req,res,next) =>{
 
     try{
-        // jwt.verify 메소드('브라우저에서 전달되는 토큰','서버에 저장해둔 토큰발급인증키값')
-        // process.env.JWT_SECRET = 서버에 저장해둔 토큰 발급인증키값
-        // req.headers.authorization = 브라우저에서 전달되는 토큰
-
-        // jwt.verify메소드는 실행 후 토큰 안의 페이로드에 저장되어 있는
-        // 사용자 정보를 디코딩해서 반환한다.
-        // 검사 후 반환되는 디코드된 사용자 저장값을 req.decoded에 저장한다.
-        // 반환 값은 뭐지??? true/false??
+        //jwt.verify메소드('브라우저에서 전달되는 토큰','서버에 저장해둔 토큰발급인증키값')로 토큰 유효성을 검사한다.
+        //jwt.verify메소드는 실행후 토큰내 페이로드에 저장되어 있는 
+        //사용자정보를 디코딩해서 반환합니다.
+        //검사후 반환되는 디코디드된 사용자 저장값을 req.decoded에 저장한다.CaptionTD
+        
+        // console.log(req.headers.authorization);
+        console.log('header'+req.headers);
+        console.log('header의 인증'+req.headers.authorization);
+        console.log('process.env.JWT_SECRET'+process.env.JWT_SECRET);
         req.decoded = jwt.verify(req.headers.authorization,process.env.JWT_SECRET);
         return next();
-
     }catch(err){
 
-        // 기한이 토큰인 경우(기한 지났으면 자동으로 에러발생하는거??)
-        // TokenExpiredError이건 뭐지??? 어디서 정한거??
-        // 클라이언트에서는 어떤 식으로 처리하는지를 봐야지 이해가 될거 같다
+        //파기기한이 지난 토큰인 경우
         if(err.name === 'TokenExpiredError'){
             return res.status(419).json({
                 code:419,
-                message:'기한 만료된 토큰'
+                message:'인증 토큰이 만료되었습니다.'
             });
         }
-        // 유효X인 토큰인 경우
+
         return res.status(401).json({
             code:401,
-            message:'유효하지 않은 토큰'
+            message:'유효하지 않은 토큰입니다.'
         });
     }
 };
