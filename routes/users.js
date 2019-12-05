@@ -140,23 +140,24 @@ router.get('/register',verifyToken,(req,res)=>{
 
 // 반드시 DB를 조회하는 코드의 콜백함수에서 실행해야만 한다
 //  강사님 코드처럼 작성할 경우에는 에러 발생(mongoose 때문?)
-  try{
+  
     const userData = User.findOne({
       userId:userId
     },(err,user)=>{
+      
+      if(err){
+        console.error('에러발생');
+        return res.status(500).json({code:500,message:'서버에러'});
+      }
+
       console.log('user정보:' + userData);
       console.log('real user정보:' + user);
       return res.json({code:200,result:user});
     })
     
-  }catch(err){
-    return res.status(500).json({code:500,message:'서버에러'});
   }
 
-
-
-
-})
+)
 
 
 
