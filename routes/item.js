@@ -15,14 +15,13 @@ router.get('/', function (req, res, next) {
 });
 
 //itemList.vue의 items에 넣을 내용
-router.get('/list', function(req, res, next) {
-    Item.find()
-    .then(items=>{
+router.get('/list', async function(req, res, next) {
+    try{
+        const items = await Item.find().exec();
         res.json(items);
-    })
-    .catch(e=>{
+    }catch(e) {
         console.error(e);
-    })
+    }
 });
 
 //detail:id
@@ -53,35 +52,24 @@ router.get('/modify/:id', function(req, res, next){
 
 //modify:id
 //itemModify.vue에서 변경된 내용 DB에 수정반영하기
-router.patch('/modify/:id', function(req, res, next){
+router.patch('/modify/:id', async function(req, res, next){
     console.log('patch\n');
     //카테고리는 나중에 구현
-    const item = {
-        itemName: req.body.itemName,
-        itemPrice: req.body.itemPrice,
-        itemLink: req.body.itemLink,
-        itemRank: req.body.itemRank,
-        visibleTo: req.body.visibleTo,
-        itemMemo: req.body.itemMemo,
-        // categoryId: 1
-    };
-    console.log(item);
-    Item.update({ _id:req.params.id }, {
-        $set: item
-    }).exec()
-    // .then(result=>{
-    //     return Item.populate(result, { path: 'categoryId'});
-    // })
-    .then(result=>{
+    try{
+        const { id } = req.params;
+        //findByIdAndUpdate는 조건식 주지 않고, id값만 첫번재 파라미터로 주면, 해당 객체를 반환해준다.
+        const item = await Item.findByIdAndUpdate(id, req.body.item, {new: true}).exec();
+        //new:true를 설정해야 업데이트 된 객체를 반환
+        //설정하지 않으면 업데이트 되기 전의 객체를 반환
         res.status(201).json({
             code: 200,
-            msg: '아이템 수정 성공'
+            msg: '아이템 수정 성공',
+            item
         });
-    })
-    .catch(e=>{
+    }catch(e){
         console.error(e);
         next(e);
-    });
+    }
 });
 
 router.delete('/detail/:id', function(req, res, next){
