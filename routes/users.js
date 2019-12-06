@@ -74,7 +74,11 @@ router.post('/login',(req,res,next)=>{
               userId:user.userId,
               nickName:user.nickName
             },process.env.JWT_SECRET,{
+<<<<<<< HEAD
               expiresIn: '60m',
+=======
+              expiresIn: '100m',
+>>>>>>> 16b38b92c375f1e974a310ffa97af1b8c11416a7
               issuer:'wishlist'
             });
 
@@ -95,6 +99,41 @@ router.post('/login',(req,res,next)=>{
     })
 });
 
+// 회원 정보 조회
+//회원 프로파일 openapi가 호출되면 미들웨어모듈의 
+//토큰 유효성 검사 공통모듈을 먼저수행하고 내부 데이터조회
+//기능이 수행된다.
+
+
+
+
+// middleware.js에서 작성한 verifyToken을 가지고 토큰에서
+// 정보를 추출 후, req.decode에 담아 놓은 상태
+
+router.get('/register',verifyToken,(req,res)=>{
+  console.log(req.decoded);
+  const userId = req.decoded.userId;
+
+// 반드시 DB를 조회하는 코드의 콜백함수에서 실행해야만 한다
+//  강사님 코드처럼 작성할 경우에는 에러 발생(mongoose 때문?)
+  
+    const userData = User.findOne({
+      userId:userId
+    },(err,user)=>{
+      
+      if(err){
+        console.error('에러발생');
+        return res.status(500).json({code:500,message:'서버에러'});
+      }
+
+      console.log('user정보:' + userData);
+      console.log('real user정보:' + user);
+      return res.json({code:200,result:user});
+    })
+    
+  }
+
+)
 
 
 
