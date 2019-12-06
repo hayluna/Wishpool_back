@@ -2,7 +2,9 @@ const jwt = require('jsonwebtoken');
 exports.verifyToken = (req,res,next) => {
 
     try{
+        console.log('토큰 유효성 비교');
         req.decoded = jwt.verify(req.headers.authorization,process.env.JWT_SECRET);
+        console.log('결과:'+req.decoded);
         return next();
     }catch(err){
         // 만료된 토큰인 경우
