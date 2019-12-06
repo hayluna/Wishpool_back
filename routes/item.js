@@ -63,19 +63,23 @@ router.patch('/modify/:id', function(req, res, next){
         itemRank: req.body.itemRank,
         visibleTo: req.body.visibleTo,
         itemMemo: req.body.itemMemo,
+        purchasedBy : req.body.purchasedBy
         // categoryId: 1
     };
     console.log(item);
-    Item.update({ _id:req.params.id }, {
+   Item.findOneAndUpdate({ _id:req.body._id }, {
         $set: item
-    }).exec()
+    },
+    {new:true})
     // .then(result=>{
     //     return Item.populate(result, { path: 'categoryId'});
     // })
     .then(result=>{
+        console.log("여기!"+ result);
         res.status(201).json({
             code: 200,
-            msg: '아이템 수정 성공'
+            msg: '아이템 수정 성공',
+            item: result
         });
     })
     .catch(e=>{
