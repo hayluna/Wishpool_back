@@ -26,7 +26,6 @@ router.post('/entry',async (req,res,next)=> {
 
 
   // 미가입 상태일 경우 신규회원 가입 처리
-// 비밀번호 암호화 처리
   const hash = bcrypt.hashSync(req.body.password,12);
 
 
@@ -74,7 +73,7 @@ router.post('/login',(req,res,next)=>{
               userId:user.userId,
               nickName:user.nickName
             },process.env.JWT_SECRET,{
-              expiresIn: '60m',
+              expiresIn: '100m',
               issuer:'wishlist'
             });
 
@@ -95,6 +94,29 @@ router.post('/login',(req,res,next)=>{
     })
 });
 
+// 회원 정보 조회
+
+router.get('/register',verifyToken,(req,res)=>{
+  console.log(req.decoded);
+  const userId = req.decoded.userId;
+
+    const userData = User.findOne({
+      userId:userId
+    },(err,user)=>{
+      
+      if(err){
+        console.error('에러발생');
+        return res.status(500).json({code:500,message:'서버에러'});
+      }
+
+      console.log('user정보:' + userData);
+      console.log('real user정보:' + user);
+      return res.json({code:200,result:user});
+    })
+    
+  }
+
+)
 
 
 
