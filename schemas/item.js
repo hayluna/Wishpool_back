@@ -52,6 +52,15 @@ const itemSchema = new Schema({
         type: String,
         required: false,
     },
+    createdAt:{
+        type:Date,
+        required: false,
+        default: Date.now,
+    },
+    deleteAt:{
+        type:Date,
+        required: false,
+    }
     // categoryId: {
     //     type: ObjectId,
     //     required: true,

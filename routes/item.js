@@ -16,12 +16,19 @@ router.get('/', function (req, res, next) {
 
 //itemList.vue의 items에 넣을 내용
 router.get('/list', async function(req, res, next) {
+    
+    console.log(Item);
     try{
-        const items = await Item.find().exec();
-        res.json(items);
+        let items = await Item.find().sort({createdAt: -1}).exec();
+        res.json({
+            code: 200,
+            msg: '아이템 조회 완료',
+            items
+        });
     }catch(e) {
         console.error(e);
     }
+    
 });
 
 //detail:id
@@ -72,49 +79,58 @@ router.patch('/modify/:id', async function(req, res, next){
     }
 });
 
+//detail페이지에서 삭제 누르면 실행되는 컨트롤러
 router.delete('/detail/:id', function(req, res, next){
     const { id } = req.params;
-    Item.findByIdAndRemove(id).exec()
-    .then(result=>{
-        res.status(204).json({
-            code: 204,
-            msg: '아이템 삭제 성공'
-        });
-    }).catch(e=>{
-        console.error(e);
-        next(e);
-    })
-});
+    (async()=>{
+        try{
+            await Item.findByIdAndRemove(id).exec();
+            try{
+                const items = await Item.find().exec();
+                res.json({
+                    code: 200,
+                    msg: '아이템 삭제 성공',
+                    items
+                })
+            }catch(e){
+                console.error(e);
+                next(e);
+            }   
+        }catch(e){
+            console.error(e);
+            next(e); 
+        }
+        
+    })();
+})
+
 //itemAdd.vue에서 생성된 내용 DB에 저장하기
 router.post('/add', function(req, res, next){
-    console.log('아이템 추가 요청'+req.body);
-
+    console.log(req.body);
     //카테고리는 나중에 구현
-    const item = new Item({
-        itemName: req.body.itemName,
-        itemPrice: req.body.itemPrice,
-        itemLink: req.body.itemLink,
-        itemRank: req.body.itemRank,
-        visibleTo: req.body.visibleTo,
-        itemMemo: req.body.itemMemo,
-        // categoryId: 1
-    });
+    let item = new Item(req.body);
     console.log(item);
-    item.save()
-    .then(result=>{
-        return Item.populate(result, { path: 'categoryId'});
-    })
-    .then(result=>{
-        res.status(201).json({
-            code: 200,
-            msg: '아이템 저장 성공'
-        });
-    })
-    .catch(e=>{
-        console.error(e);
-        next(e);
-    });
-
+    (async()=>{
+        try {
+            await item.save();
+            let items =[];
+            try {
+                //저장 후 아이템 리스트로 가게 된다. 가기 전 아이템 리스트 업데이트가 필요하다.
+                //새로운 아이템 리스트를 반환한다.
+                items = await Item.find().exec();
+                res.json({
+                    code: 200,
+                    msg: '아이템 저장성공',
+                    items
+                })
+            } catch (e) {
+                console.error(e);
+            }
+        } catch (e) {
+            console.error(e);
+            next(e);
+        }
+    })();
 });
 
 
