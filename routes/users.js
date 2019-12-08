@@ -23,9 +23,10 @@ router.post('/entry',(req,res,next)=> {
   // 기존에 가입된 회원인지 확인(나중에 처리)
 
 
-  // 미가입 상태일 경우 신규회원 가입 처리
+  // 단방향 해쉬 암호화(해독불가)
   const hash = bcrypt.hashSync(req.body.password,12);
-
+  
+  // 미가입 상태일 경우 신규회원 가입 처리
   const user = new User({
 
     userName:req.body.userName,
@@ -41,13 +42,15 @@ router.post('/entry',(req,res,next)=> {
   user.save()
     .then(function(result){
       console.log(result);
+
       // 회원 가입과 동시에 로그인하게끔 처리
       const token = jwt.sign({
         userId:user.userId,
       },process.env.JWT_SECRET,{
-        expiresIn: '7d',
+        expiresIn: '1d',
         issuer:'wishlist'
       });
+
       
       return res.json({ code:200, result:token});
     })
@@ -107,6 +110,7 @@ router.get('/profile',verifyToken,(req,res)=>{
       }
 
       if(user){
+        console.log(user);
         return res.json({code:200,result:user});
       }else{
         return res.json({code:500,message:'유효하지 않은 회원입니다'});
@@ -127,18 +131,18 @@ router.get('/logout',verifyToken,(req,res)=>{
         console.error('에러발생');
         return res.status(500).json({code:500,message:'서버에러'});
       }
-      // 코드 수정 필요
-      const token = jwt.sign(null,process.env.JWT_SECRET,{
+      // 토큰 삭제 전 유효시간을 0으로 처리
+      const token = jwt.sign({userId:userId},process.env.JWT_SECRET,{
         expiresIn: 0,
         issuer:'wishlist'
       });
       
       return res.json({code:200,result:token});
     })
-    
   }
-
 )
+
+// 캐시 재발급(로그인 상태 유지를 선택했을 시)
 
 
 
@@ -149,7 +153,27 @@ router.get('/logout',verifyToken,(req,res)=>{
 
 
 // 회원탈퇴
+router.get('/deleteAccount',verifyToken,(req,res)=>{
+  const userId = req.decoded.userId;
 
+    User.findOne({
+      userId:userId
+    },(err,user)=>{
+      
+      if(err){
+        console.error('에러발생');
+        return res.status(500).json({code:500,message:'서버에러'});
+      }
+      // 
+      const token = jwt.sign({userId:userId},process.env.JWT_SECRET,{
+        expiresIn: 0,
+        issuer:'wishlist'
+      });
+      
+      return res.json({code:200,result:token});
+    })
+  }
+)
 
 
 
