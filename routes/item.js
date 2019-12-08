@@ -91,12 +91,14 @@ router.get('/modify/:id', function(req, res, next){
 router.patch('/modify/:id', async function(req, res, next){
     console.log('patch\n');
     //카테고리는 나중에 구현
+    console.log('ppp'+req.body);
     try{
         const { id } = req.params;
         //findByIdAndUpdate는 조건식 주지 않고, id값만 첫번재 파라미터로 주면, 해당 객체를 반환해준다.
-        const item = await Item.findByIdAndUpdate(id, req.body.item, {new: true}).exec();
+        const item = await Item.findByIdAndUpdate(id, req.body, {new: true}).exec();
         //new:true를 설정해야 업데이트 된 객체를 반환
         //설정하지 않으면 업데이트 되기 전의 객체를 반환
+        console.log(item);
         res.status(201).json({
             code: 200,
             msg: '아이템 수정 성공',
