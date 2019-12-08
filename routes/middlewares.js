@@ -18,3 +18,16 @@ exports.verifyToken = (req,res,next) => {
         });
     }
 };
+
+const { ObjectId } = require('mongoose').Types;
+
+exports.checkObjectId = (req, res, next)=>{
+    const { id } = req.params;
+
+    //검증 실패
+    if(!ObjectId.isValid(id)){
+        res.status = 400;
+        return null;
+    }
+    return next();
+}

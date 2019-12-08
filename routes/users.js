@@ -53,6 +53,23 @@ router.post('/entry',async (req,res,next)=> {
     });
 });
 
+
+//(혜은) 회원가입 테스트용
+router.post('/temp', async (req,res, next)=>{
+  console.log(req.body);
+  let user = new User(req.body);
+  try {
+      await user.save();
+      res.json({
+        code: 200,
+        msg: '회원 저장성공',
+    })
+  } catch (e) {
+      console.error(e);
+      next(e);
+  }
+});
+
 // 로그인 처리
 router.post('/login',(req,res,next)=>{
   

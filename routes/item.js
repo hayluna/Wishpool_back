@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
-
+var mongoose = require('mongoose');
 var Item = require('../schemas/item');
+
+const { checkObjectId } = require('./middlewares');
 
 router.get('/', function (req, res, next) {
   // User.find({})
@@ -14,10 +16,38 @@ router.get('/', function (req, res, next) {
   //   });
 });
 
-//itemList.vue의 items에 넣을 내용
-router.get('/list', async function(req, res, next) {
+//특정유저의 리스트 불러오기
+router.get('/list/:id', checkObjectId, async function(req, res, next) {
+    const { id } = req.params;
     
-    console.log(Item);
+    //만약 string이 확실히 ObjectId인데 ObjectId로 넘어오지 않는다면.. 근데 이거 쓸필요없음. 미들웨어에서 어차피 못통과함. ㅋ.
+//   const uid = mongoose.Types.ObjectId(id);
+
+    //앞으로 해야할것. 내가 아닐경우 공개 리스트만 불러오기
+    //나일경우 전부 불러오기
+    try{
+        let items = await Item.find( {userId : id} ).sort({createdAt: -1}).exec();
+        if(!items){
+            res.json({
+                code: 404,
+                msg: '조회 결과가 없습니다.',
+            })
+            return;
+        }
+        res.json({
+            code: 200,
+            msg: '아이템 조회 완료',
+            items
+        });
+    }catch(e) {
+        console.error(e);
+    }
+    
+    
+});
+
+//itemList.vue의 items에 넣을 내용
+router.get('/list/', async function(req, res, next) {
     try{
         let items = await Item.find().sort({createdAt: -1}).exec();
         res.json({
@@ -28,7 +58,6 @@ router.get('/list', async function(req, res, next) {
     }catch(e) {
         console.error(e);
     }
-    
 });
 
 //detail:id

@@ -60,6 +60,12 @@ const itemSchema = new Schema({
     deleteAt:{
         type:Date,
         required: false,
+    },
+    //수정 - 카테고리 없앴으니까 item이랑 user랑 연결되어야 한다.
+    userId:{
+        type:ObjectId,
+        required: true,
+        ref: 'User'
     }
     // categoryId: {
     //     type: ObjectId,

@@ -23,7 +23,7 @@ const userSchema = new Schema({
     email:{
         type:String,
         required: true,
-        unique: true,
+        // unique: true, //테스트를 위해 잠시 주석처리. 꼭해제할것
     },
     password:{
         type:String,
@@ -32,7 +32,7 @@ const userSchema = new Schema({
     phone:{
         type:String,
         required: true,
-        unique: true,
+        // unique: true, //테스트를 위해 잠시 주석처리. 꼭 해제할것
     },
     nickName:{
         type:String,
