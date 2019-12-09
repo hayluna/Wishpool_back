@@ -100,7 +100,7 @@ router.post('/login',(req,res,next)=>{
 // 회원 정보 조회
 router.get('/profile',verifyToken,(req,res)=>{
   const userId = req.decoded.userId;
-
+    console.log('호출');
     User.findOne({
       userId:userId
     },(err,user)=>{
