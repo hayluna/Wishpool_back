@@ -25,7 +25,8 @@ var groupRouter = require('./routes/group');
 var indexRouter = require('./routes/index');
 var itemRouter = require('./routes/item');
 var usersRouter = require('./routes/users');
-
+var dummyRouter = require('./routes/dummy');
+var followRouter = require('./routes/follow');
 // 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
 var connect = require('./schemas');
 
@@ -60,6 +61,8 @@ app.use('/group', groupRouter);
 app.use('/', indexRouter);
 app.use('/item', itemRouter);
 app.use('/users', usersRouter);
+app.use('/test', dummyRouter);
+app.use('/follow', followRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

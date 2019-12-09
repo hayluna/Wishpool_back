@@ -60,11 +60,13 @@ const userSchema = new Schema({
     },
     followingId:[{
         type: ObjectId,
-        ref: 'User'
+        ref: 'User',
+        unique: true
     }],
     followerId:[{
         type: ObjectId,
-        ref: 'User'
+        ref: 'User',
+        unique: true,
     }],
     entryType:{
         type:String,

@@ -70,29 +70,6 @@ router.post('/temp', async (req,res, next)=>{
   }
 });
 
-//(혜은) follow리스트 조회용
-router.get('/list/:id', async(req,res,next)=>{
-  const { id } = req.params;
-  try {
-    let user = await User.findById(id).populate('followingId').populate('followerId').exec();
-    console.log(user);
-    if(user){
-      res.json({
-        code: 200,
-        msg: '회원 및 팔로우 정보 조회 성공',
-        user
-      });
-    }else{
-      res.json({
-        code: 500,
-        msg: '회원 및 팔로우 정보 조회 불가'
-      })
-    }
-  } catch (e) {
-      console.error(e);
-  }
-})
-
 // 로그인 처리
 router.post('/login',(req,res,next)=>{
   
