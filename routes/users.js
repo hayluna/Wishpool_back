@@ -3,7 +3,6 @@ var router = express.Router();
 const bcrypt =require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verifyToken } = require('./middlewares'); 
-var nodemailer = require('nodemailer');
 
 var User = require('../schemas/user');
 
@@ -121,6 +120,7 @@ router.get('/profile',verifyToken,(req,res)=>{
 
 // 로그아웃
 router.get('/logout',verifyToken,(req,res)=>{
+  console.log('호출');
   console.log(req.decoded);
   const userId = req.decoded.userId;
 
@@ -132,13 +132,7 @@ router.get('/logout',verifyToken,(req,res)=>{
         console.error('에러발생');
         return res.status(500).json({code:500,message:'서버에러'});
       }
-      // 토큰 삭제 전 유효시간을 0으로 처리
-      const token = jwt.sign({userId:userId},process.env.JWT_SECRET,{
-        expiresIn: 0,
-        issuer:'wishlist'
-      });
-      
-      return res.json({code:200,result:token});
+      return res.json({code:200,result:'로그아웃'});
     })
   }
 )
@@ -154,29 +148,18 @@ router.get('/logout',verifyToken,(req,res)=>{
 
 
 // 회원탈퇴
-router.get('/deleteAccount',verifyToken,(req,res)=>{
+router.patch('/deleteAccount',verifyToken,(req,res)=>{
   const userId = req.decoded.userId;
+    User.update(
+      {userId:userId},{userState:false},(err,user)=>{
+          if(err){
+            console.error(err);
+          }
+          console.log(userId + '님이 탈퇴하셨습니다.');
+          return res.json({code:200,result:'탈퇴 완료'});
 
-    User.findOne({
-      userId:userId
-    },(err,user)=>{
-      
-      if(err){
-        console.error('에러발생');
-        return res.status(500).json({code:500,message:'서버에러'});
-      }
-      // 
-      const token = jwt.sign({userId:userId},process.env.JWT_SECRET,{
-        expiresIn: 0,
-        issuer:'wishlist'
-      });
-      
-      return res.json({code:200,result:token});
-    })
-  }
-)
-
-
-
+      })
+  
+   })
 
 module.exports = router;
