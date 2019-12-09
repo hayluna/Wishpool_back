@@ -3,6 +3,7 @@ var router = express.Router();
 const bcrypt =require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verifyToken } = require('./middlewares'); 
+var nodemailer = require('nodemailer');
 
 var User = require('../schemas/user');
 
