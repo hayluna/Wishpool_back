@@ -137,13 +137,21 @@ router.get('/logout',verifyToken,(req,res)=>{
   }
 )
 
-// 캐시 재발급(로그인 상태 유지를 선택했을 시)
-
-
-
-
-// 비밀번호 수정
-
+// 비밀번호 수정(이메일에서 호출)
+router.patch('/resetPwd',verifyToken,(req,res)=>{
+  console.log('호출' + req.decoded);
+  const newPassword = req.body.password;
+  const email = req.decoded.email;
+  console.log('email=' + email);
+  User.update(
+    {email:email},{password:newPassword},(err,user)=>{
+      if(err){
+        console.error(err);
+      }
+      console.log('비밀번호 변경 완료');
+      return res.json({code:200,result:'비밀번호 변경 완료'});
+    })
+})
 
 
 
