@@ -135,6 +135,28 @@ router.delete('/detail/:id', function(req, res, next){
     })();
 })
 
+//프로필에서 해당유저의 아이템 갯수 호출하는 API
+router.get('/count/:id', async(req, res, next)=>{
+    const { id } = req.params;
+    try{
+        let count = await Item.find({userId:id}).count();
+        if(count){
+            res.json({
+                code: 200,
+                msg: '아이템 갯수 조회 성공',
+                count
+            });
+        }else{
+            res.json({
+                code: 50,
+                msg: '아이템 갯수 조회 실패'
+            })
+        }
+    }catch(e){
+        console.error(e);
+    }
+})
+
 //itemAdd.vue에서 생성된 내용 DB에 저장하기
 router.post('/add', function(req, res, next){
     console.log(req.body);
