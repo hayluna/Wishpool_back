@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
+const { Types: { ObjectId } } = Schema;
 
 // 모델을 만드는 이유
 // 몽고DB를 사용하지만 RDB처럼 데이터구조를 잡아놓고, 표현
@@ -23,7 +24,7 @@ const userSchema = new Schema({
     email:{
         type:String,
         required: true,
-        unique: true,
+        // unique: true, //테스트를 위해 잠시 주석처리. 꼭해제할것
     },
     password:{
         type:String,
@@ -32,7 +33,7 @@ const userSchema = new Schema({
     phone:{
         type:String,
         required: true,
-        unique: true,
+        // unique: true, //테스트를 위해 잠시 주석처리. 꼭 해제할것
     },
     nickName:{
         type:String,
@@ -57,14 +58,16 @@ const userSchema = new Schema({
         type:String,
         required: false,
     },
-    followingId:{
-        type:Array,
-        required: false,
-    },
-    followerId:{
-        type:Array,
-        required: false,
-    },
+    followingId:[{
+        type: ObjectId,
+        ref: 'User',
+        unique: true
+    }],
+    followerId:[{
+        type: ObjectId,
+        ref: 'User',
+        unique: true,
+    }],
     entryType:{
         type:String,
         required: true,

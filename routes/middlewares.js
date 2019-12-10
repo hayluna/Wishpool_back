@@ -8,7 +8,8 @@ exports.verifyToken = (req,res,next) => {
     }catch(err){
         // 만료된 토큰인 경우
          if(err.name === 'TokenExpiredError'){
-            return res.status(419).json({
+            // return res.status(419).json({
+            return res.json({
                 code:419,
                 message:'인증 토큰이 만료되었습니다.'
             });
@@ -20,3 +21,16 @@ exports.verifyToken = (req,res,next) => {
         });
     }
 };
+
+const { ObjectId } = require('mongoose').Types;
+
+exports.checkObjectId = (req, res, next)=>{
+    const { id } = req.params;
+
+    //검증 실패
+    if(!ObjectId.isValid(id)){
+        res.status = 400;
+        return null;
+    }
+    return next();
+}
