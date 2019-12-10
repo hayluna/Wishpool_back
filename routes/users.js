@@ -114,6 +114,31 @@ router.post('/login',(req,res,next)=>{
     })
 });
 
+
+//(혜은) 회원 프로필정보 조회
+router.get('/profile/:id', async(req,res,next)=>{
+  const { id } = req.params;
+  try{
+    let user = await User.findOne({_id:id});
+    if(user){
+      res.json({
+        code: 200,
+        msg: '일치하는 사용자프로필을 찾았습니다.',
+        user
+      })
+    }else{
+      res.json({
+        code: 503,
+        msg: '일치하는 사용자가 없습니다.',
+      })
+    }
+  }catch(e){
+    console.error(e);
+    next(e);
+  }
+    
+})
+
 // 회원 정보 조회
 router.get('/profile',verifyToken,(req,res)=>{
   const userId = req.decoded.userId;
@@ -134,6 +159,37 @@ router.get('/profile',verifyToken,(req,res)=>{
       }
     })
 } )
+
+//modify:id
+//itemModify.vue에서 변경된 내용 DB에 수정반영하기
+router.patch('/profile/modify/:id', async function(req, res, next){
+  const { id } = req.params;
+  const user = req.body;
+  console.log('here', user);
+  try{
+      //findByIdAndUpdate는 조건식 주지 않고, id값만 첫번재 파라미터로 주면, 해당 객체를 반환해준다.
+      const newUser = await User.findByIdAndUpdate(id, user, {new: true}).exec();
+      //new:true를 설정해야 업데이트 된 객체를 반환
+      //설정하지 않으면 업데이트 되기 전의 객체를 반환
+      if(newUser){
+        
+      console.log('there', newUser);
+        res.status(201).json({
+          code: 200,
+          msg: '회원 프로필 정보 수정 성공',
+          newUser
+        });
+      }else{
+        res.json({
+          code: 500,
+          msg: '회원 프로필 정보 수정 실패'
+        })
+      }
+  }catch(e){
+      console.error(e);
+      next(e);
+  }
+});
 
 // 로그아웃
 router.get('/logout',verifyToken,(req,res)=>{
