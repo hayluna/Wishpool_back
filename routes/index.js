@@ -20,7 +20,7 @@ router.post("/mail", function(req, res, next){
     service: 'gmail',
     auth: {
       user: 'wishlistunicorn@gmail.com',  // wishlist 이메일 계정
-      pass: 'unicornstore'          // wishlist 이메일 계정의 비밀번호(나중에 빼기)
+      pass: 'unicornstore'          // wishlist 이메일 계정의 비밀번호(나중에 이 부분 빼기)
     }
   });
   
@@ -29,7 +29,7 @@ router.post("/mail", function(req, res, next){
     to: email ,                     // 수신 메일 주소
     subject: 'wishlist 회원 비밀번호 변경',   // 제목
     html: '<p>아래의 링크를 클릭해주세요 !</p>' +
-      "<a href='http://localhost:8080/#/user/auth/" + token +"'>인증하기</a>"
+      "<a href='http://localhost:8080/user/auth/" + token +"'>인증하기</a>"
   };
   // 메일을 발송
   transporter.sendMail(mailOptions, function(error, info){
