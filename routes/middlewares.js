@@ -8,7 +8,8 @@ exports.verifyToken = (req,res,next) => {
     }catch(err){
         // 만료된 토큰인 경우
          if(err.name === 'TokenExpiredError'){
-            return res.status(419).json({
+            // return res.status(419).json({
+            return res.json({
                 code:419,
                 message:'인증 토큰이 만료되었습니다.'
             });
