@@ -77,8 +77,6 @@ router.post('/temp', async (req, res, next) => {
   }
 });
 
-<<<<<<< HEAD
-=======
 //(혜은) follow리스트 조회용
 router.get('/list/:id', async (req, res, next) => {
   const { id } = req.params;
@@ -103,7 +101,6 @@ router.get('/list/:id', async (req, res, next) => {
 })
 
 
->>>>>>> temp_master
 // 로그인 처리
 router.post('/login', (req, res, next) => {
 

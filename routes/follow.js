@@ -12,12 +12,14 @@ router.get('/list/:id', async(req,res,next)=>{
     const { id } = req.params;
     console.log('팔로우 목록조회', id);
     try {
-      let user = await User.findById(id).populate('followingId').populate('followerId').exec();
-      console.log(user);
+      let populated = await User.findById(id, 'followerId, followingId').populate('followingId').populate('followerId').exec();
+      let user = await User.findById(id);
+      console.log(populated);
       if(user){
         res.json({
           code: 200,
           msg: '회원 및 팔로우 정보 조회 성공',
+          populated,
           user
         });
       }else{
@@ -32,11 +34,12 @@ router.get('/list/:id', async(req,res,next)=>{
     }
   })
 
-  router.get('/searchId/:id', async(req,res,next)=>{
-      const { id } = req.params;
-    //id값으로 찾고, 있으면 리턴, 없으면
+  router.get('/searchId', async(req,res,next)=>{
+    const { searchQuery, id } = req.query; 
+    //searchQuery값으로 찾는다. id는 내 아이디이다.
     try {
-        let matchUsers = await User.find({userId: {$regex : '.*'+id+'.*'}}).populate('followingId').populate('followerId').exec();
+      //$ne : not equal, 나는 제외한다.
+      let matchUsers = await User.find({userId: {$regex : '.*'+searchQuery+'.*'}, _id: {$ne: id}}).populate('followingId').populate('followerId').exec();
         if(matchUsers.length != 0){
             console.log(matchUsers);
             res.json({
@@ -55,12 +58,12 @@ router.get('/list/:id', async(req,res,next)=>{
     }
   });
 
-  router.get('/searchPhone/:id', async(req,res,next)=>{
-    const { id } = req.params;
+  router.get('/searchPhone', async(req,res,next)=>{
+    const { searchQuery, id } = req.query;
   //id값으로 찾고, 있으면 리턴, 없으면
   console.log('search', id);
   try {
-      let matchUsers = await User.find({phone: {$regex : '.*'+id+'.*'}});
+      let matchUsers = await User.find({phone: {$regex : '.*'+searchQuery+'.*'}, _id: {$ne: id}}).populate('followingId').populate('followerId').exec();
       if(matchUsers.length != 0){
           console.log(matchUsers);
           res.json({
@@ -92,19 +95,20 @@ router.patch('/add/:id', async function(req, res, next){
       
       //내가 팔로잉하는 상대의 팔로워목록이 갱신된 객체로 덮어쓰기
       const followingUser = await User.findByIdAndUpdate(followUser._id, followUser, {new:true}).exec();
-      console.log('2', followingUser);
-      
-      const user = await User.findByIdAndUpdate(id, selfUser, {new: true}).populate('followingId').populate('followerId').exec();
+      const user = await User.findByIdAndUpdate(id, selfUser, {new:true}).exec();
       //new:true를 설정해야 업데이트 된 객체를 반환
       //설정하지 않으면 업데이트 되기 전의 객체를 반환
       console.log('1', user);
-
-      if(user&&followingUser){
+      console.log('2', followingUser);
+      
+      let populated = await User.findById(id).populate('followingId').populate('followerId').exec();
+      
+      if(user&&populated&&followingUser){
         res.status(201).json({
           code: 200,
-          msg: '팔로우 추가 성공',
+          msg: '팔로우 수정 성공',
+          populated,
           user,
-          followingUser
         });
       }else{
         res.json({
