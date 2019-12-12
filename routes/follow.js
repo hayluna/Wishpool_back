@@ -39,8 +39,9 @@ router.get('/list/:id', async(req,res,next)=>{
     const { searchQuery, id } = req.query; 
     //searchQuery값으로 찾는다. id는 내 아이디이다.
     try {
+      console.log(id);
       //$ne : not equal, 나는 제외한다.
-      let matchUsers = await User.find({userId: {$regex : '.*'+searchQuery+'.*'}, _id: {$ne: id}}).populate('followingId').populate('followerId').exec();
+      let matchUsers = await User.find({userId: {$regex : '.*'+searchQuery+'.*'}, _id: {$ne: id}}).populate('followingId').populate('followerId');
         if(matchUsers.length != 0){
             console.log(matchUsers);
             res.json({
@@ -87,29 +88,27 @@ router.get('/list/:id', async(req,res,next)=>{
 router.patch('/add/:id', async function(req, res, next){
   //:id : 내가 팔로우하려는 아디
   //req.body : 나의 유저객체
-  console.log('ppp'+req.body.selfUser.followingId.length);
-  console.log('ppp'+req.body.followUser.followerId.length);
   try{
       //내 팔로잉 목록이 갱신된 객체로 덮어쓰기
       const { id } = req.params;
-      const { selfUser, followUser } = req.body; //프론트에서 넘어온 갱신된 유저 객체들
+      const { user, followUser } = req.body; //프론트에서 넘어온 갱신된 유저 객체들
       
       //내가 팔로잉하는 상대의 팔로워목록이 갱신된 객체로 덮어쓰기
       const followingUser = await User.findByIdAndUpdate(followUser._id, followUser, {new:true}).exec();
-      const user = await User.findByIdAndUpdate(id, selfUser, {new:true}).exec();
+      const newUser = await User.findByIdAndUpdate(user._id, user, {new:true}).exec();
       //new:true를 설정해야 업데이트 된 객체를 반환
       //설정하지 않으면 업데이트 되기 전의 객체를 반환
-      console.log('1', user);
+      console.log('1', newUser);
       console.log('2', followingUser);
       
       let populated = await User.findById(id).populate('followingId').populate('followerId').exec();
       
-      if(user&&populated&&followingUser){
+      if(newUser&&populated&&followingUser){
         res.status(201).json({
           code: 200,
           msg: '팔로우 수정 성공',
           populated,
-          user,
+          newUser,
         });
       }else{
         res.json({
