@@ -1,6 +1,7 @@
 //테스트용 더미데이터 만드는 임시 파일
 var express = require('express');
 var router = express.Router();
+const bcrypt = require('bcrypt');
 
 var User = require('../schemas/user');
 var Item = require('../schemas/item');
@@ -53,5 +54,55 @@ router.get('/photo', async(req,res,next)=>{
     } catch (e) {
         console.error(e);
     }
+})
+
+router.get('/pwd', async(req,res,next)=>{
+     // 단방향 해쉬 암호화(해독불가)
+//   const hash = bcrypt.hashSync(req.body.password, 12);
+
+//   // 미가입 상태일 경우 신규회원 가입 처리
+//   const user = new User({
+
+//     userName: req.body.userName,
+//     userId: req.body.userId,
+//     password: hash,
+//     email: req.body.email,
+//     phone: req.body.phone,
+//     nickName: req.body.nickName,
+//     birth: req.body.birth,
+//     entryType: req.body.entryType,
+
+//   });
+//   user.save()
+//     .then(function (result) {
+//       console.log(result);
+     
+//       const token = jwt.sign({
+//         userId: user.userId,
+//       }, process.env.JWT_SECRET, {
+//         expiresIn: '1d',
+//         issuer: 'wishlist'
+//       });
+
+
+//       return res.json({ code: 200, result: token });
+//     })
+//     .catch(function (err) {
+//       console.error(err);
+//       next(err);
+//     });
+
+    try{
+        let users = await User.find(null, '_id password');
+        console.log(users);
+        users.forEach(async user=>{
+            let pwd = await bcrypt.hashSync(user.password, 12);
+            let newUser = await User.findByIdAndUpdate(user._id, {password: pwd}, {new:true});
+            console.log('오이오이', newUser);
+        })
+    }catch(e){
+        console.error(e);
+    }
+    
 })
 module.exports = router;
