@@ -363,4 +363,17 @@ router.patch('/deleteAccount', verifyToken, (req, res) => {
 
 })
 
+//
+router.get('/loginInfo/:id', async (req, res)=>{
+  const { id } = req.params;
+  const user = await User.findOne({userId:id}, '_id').exec();
+  console.log(user);
+  if(user){
+    res.json({
+      code: 200,
+      _id: user._id
+    })
+  }
+
+})
 module.exports = router;

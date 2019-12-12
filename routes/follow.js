@@ -12,9 +12,10 @@ router.get('/list/:id', async(req,res,next)=>{
     const { id } = req.params;
     console.log('팔로우 목록조회', id);
     try {
-      let populated = await User.findById(id, 'followerId, followingId').populate('followingId').populate('followerId').exec();
+      let populated = await User.findById(id).populate('followingId').populate('followerId');
       let user = await User.findById(id);
-      console.log(populated);
+      console.log('제발여22', populated);
+      console.log('잠좀', user);
       if(user){
         res.json({
           code: 200,

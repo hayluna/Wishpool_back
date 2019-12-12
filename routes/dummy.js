@@ -57,40 +57,7 @@ router.get('/photo', async(req,res,next)=>{
 })
 
 router.get('/pwd', async(req,res,next)=>{
-     // 단방향 해쉬 암호화(해독불가)
-//   const hash = bcrypt.hashSync(req.body.password, 12);
-
-//   // 미가입 상태일 경우 신규회원 가입 처리
-//   const user = new User({
-
-//     userName: req.body.userName,
-//     userId: req.body.userId,
-//     password: hash,
-//     email: req.body.email,
-//     phone: req.body.phone,
-//     nickName: req.body.nickName,
-//     birth: req.body.birth,
-//     entryType: req.body.entryType,
-
-//   });
-//   user.save()
-//     .then(function (result) {
-//       console.log(result);
-     
-//       const token = jwt.sign({
-//         userId: user.userId,
-//       }, process.env.JWT_SECRET, {
-//         expiresIn: '1d',
-//         issuer: 'wishlist'
-//       });
-
-
-//       return res.json({ code: 200, result: token });
-//     })
-//     .catch(function (err) {
-//       console.error(err);
-//       next(err);
-//     });
+//dummy데이터 비번 암호화. 비번은 모두 1234로 동일.
 
     try{
         let users = await User.find(null, '_id password');
