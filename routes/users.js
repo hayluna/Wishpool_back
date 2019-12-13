@@ -363,6 +363,10 @@ router.patch('/deleteAccount', verifyToken, (req, res) => {
 
 })
 
+router.get('/verify', veryfiToken, (req,res)=>{
+  res.json(req.decoded);
+});
+
 //
 router.get('/loginInfo/:id', async (req, res)=>{
   const { id } = req.params;
