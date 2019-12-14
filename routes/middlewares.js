@@ -1,6 +1,21 @@
 const jwt = require('jsonwebtoken');
-exports.verifyToken = (req,res,next) => {
+exports.isLoggedIn = (req,res,next)=>{
+    if(req.isAuthenticated()){
+        try{
+            req.decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+            return next();
+        }catch(e){
+            console.error(e);
+        }
+    }else{
+        res.json({
+            code: 403,
+            message: '로그인 되어있지 않습니다. 로그인이 필요합니다.'
+        })
+    }
+};
 
+exports.verifyToken = (req,res,next) => {
     try{
         req.decoded = jwt.verify(req.headers.authorization,process.env.JWT_SECRET);
         console.log('결과:'+req.decoded);
@@ -15,7 +30,7 @@ exports.verifyToken = (req,res,next) => {
             });
         }
         // 토큰이 유효하지 않은 경우
-        return res.status(401).json({
+        return res.json({
             code:401,
             message:'유효하지 않은 토큰입니다.'
         });

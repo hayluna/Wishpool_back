@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { verifyToken } = require('./middlewares');
+const { verifyToken, isLoggedIn } = require('./middlewares');
 const nodemailer = require('nodemailer');
 
 var User = require('../schemas/user');
@@ -363,8 +363,18 @@ router.patch('/deleteAccount', verifyToken, (req, res) => {
 
 })
 
-router.get('/verify', veryfiToken, (req,res)=>{
-  res.json(req.decoded);
+router.get('/check', verifyToken, async (req,res)=>{
+  //여기까지 넘어왔다면, 인증된 사용자
+  //decoded의 값으로 user에서 _id값 찾아 보내준다.
+  let user = await User.findOne({userId:req.decoded.userId});
+  if(user){
+    res.json({
+      code: 200,
+      message: '로그인이 유효한 사용자입니다.',
+      userId: user._id
+    });
+  }
+ 
 });
 
 //
