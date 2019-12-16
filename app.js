@@ -23,12 +23,9 @@ io.attach(server);
 s={};
 s.connectedClients={};
 io.on('connection', function(socket){
-  console.log('1', socket.id)
   socket.emit('giveSid', socket.id);
   socket.on('receiveUid', uid=>{
-    console.log('2', uid)
     s.connectedClients[uid] = {id:socket.id};
-    console.log('3',  s.connectedClients[uid])
   })      
   socket.on('follow-add', (data)=>{
       console.log(data.follower+", "+data.followed.userName);
