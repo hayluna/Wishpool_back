@@ -4,12 +4,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+var cors = require('cors') //cors설정
 require('dotenv').config();
 
 
 var app = express();
 
 
+var corsOptions = {
+  origin: '*',};
+
+app.use(cors(corsOptions));
 // 웹소켓 
 var server = require('http').createServer(app); //웹 소켓을 위한 새로운 서버를 만든다.
 
@@ -50,18 +55,13 @@ var followRouter = require('./routes/follow');
 // 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
 var connect = require('./schemas');
 
-var cors = require('cors') //cors설정
 
 // 몽고디비: express객체 생긴 후 몽고디비 연결
 connect();
 
 //웹소켓통신을 위해서는 쌍방 cors설정이 되어야한다.
 //클라이언트의 주소를 허용한다.
-// var corsOptions = {
-//   origin: '*',};
-
-// app.use(cors(corsOptions));
-app.use(cors()) //cors use
+// app.use(cors()) //cors use
 
 
 // view engine setup
