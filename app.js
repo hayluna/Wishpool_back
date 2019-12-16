@@ -7,6 +7,8 @@ var logger = require('morgan');
 require('dotenv').config();
 
 
+var app = express();
+
 
 // 웹소켓 
 var server = require('http').createServer(app); //웹 소켓을 위한 새로운 서버를 만든다.
@@ -49,8 +51,6 @@ var followRouter = require('./routes/follow');
 var connect = require('./schemas');
 
 var cors = require('cors') //cors설정
-
-var app = express();
 
 // 몽고디비: express객체 생긴 후 몽고디비 연결
 connect();
