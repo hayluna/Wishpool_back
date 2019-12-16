@@ -31,8 +31,13 @@ io.on('connection', function(socket){
     console.log('3',  s.connectedClients[uid])
   })      
   socket.on('follow-add', (data)=>{
-      console.log(data.follower+", "+data.followed);
-      socket.to(s.connectedClients[data.followed].id).emit('follow-noti');
+      console.log(data.follower+", "+data.followed.userName);
+      if(s.connectedClients[data.followed._id]){
+        socket.to(s.connectedClients[data.followed._id].id).emit('increase-noti');
+        socket.to(s.connectedClients[data.followed._id].id).emit('follow-noti', data.follower.user);
+      }else{
+        console.error('해당사용자가 없습니다.');
+      }
   });
 })
 
