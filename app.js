@@ -14,7 +14,7 @@ var app = express();
 var server = require('http').createServer(app); //웹 소켓을 위한 새로운 서버를 만든다.
 
 //웹소켓 서버는 3001번에서 listening하고 있다.
-server.listen(3001, '0.0.0.0');
+server.listen('http://52.231.107:5000');
 
 //socket연결 및 on, event행동정보가 담긴 socket.js모듈을 불러온다.
 //socket.js모듈은 웹서버를 파라미터로 받는 함수이다.
