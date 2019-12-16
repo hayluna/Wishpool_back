@@ -6,6 +6,27 @@ var logger = require('morgan');
 
 require('dotenv').config();
 
+var cors = require('cors') //cors설정
+
+var app = express();
+
+// 몽고디비: express객체 생긴 후 몽고디비 연결
+connect();
+
+//웹소켓통신을 위해서는 쌍방 cors설정이 되어야한다.
+//클라이언트의 주소를 허용한다.
+// var corsOptions = {
+//   origin: '*',};
+
+// app.use(cors(corsOptions));
+app.use(cors()) //cors use
+
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  return next();
+});
 
 
 // 웹소켓 
@@ -52,20 +73,6 @@ var followRouter = require('./routes/follow');
 // 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
 var connect = require('./schemas');
 
-var cors = require('cors') //cors설정
-
-var app = express();
-
-// 몽고디비: express객체 생긴 후 몽고디비 연결
-connect();
-
-//웹소켓통신을 위해서는 쌍방 cors설정이 되어야한다.
-//클라이언트의 주소를 허용한다.
-// var corsOptions = {
-//   origin: '*',};
-
-// app.use(cors(corsOptions));
-app.use(cors()) //cors use
 
 
 // view engine setup
