@@ -4,6 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+var categoryRouter = require('./routes/category');
+var groupRouter = require('./routes/group');
+var indexRouter = require('./routes/index');
+var itemRouter = require('./routes/item');
+var usersRouter = require('./routes/users');
+var dummyRouter = require('./routes/dummy');
+var followRouter = require('./routes/follow');
+// 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
+var connect = require('./schemas');
+
 require('dotenv').config();
 
 var cors = require('cors') //cors설정
@@ -62,16 +72,6 @@ io.on('connection', function(socket){
       }
   });
 })
-
-var categoryRouter = require('./routes/category');
-var groupRouter = require('./routes/group');
-var indexRouter = require('./routes/index');
-var itemRouter = require('./routes/item');
-var usersRouter = require('./routes/users');
-var dummyRouter = require('./routes/dummy');
-var followRouter = require('./routes/follow');
-// 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
-var connect = require('./schemas');
 
 
 
