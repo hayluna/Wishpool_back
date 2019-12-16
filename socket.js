@@ -16,7 +16,13 @@ module.exports = (server) =>{
         socket.on('error', (error)=>{
             console.error(error);
         });
+        s.connectedClients[socket.id]={id:socket.id};
+        io.sockets.emit('giveSid', socket.id);
         
+        socket.on('follow-add', (data)=>{
+            console.log(data.follower+", "+data.followed);
+            socket.emit('follow-noti');
+        });
         
     })
 }
