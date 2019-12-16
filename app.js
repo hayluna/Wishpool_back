@@ -23,12 +23,13 @@ io.attach(server);
 s={};
 s.connectedClients={};
 io.on('connection', function(socket){
+  console.log("여기!!!!!!!!!!\n\n\n\n");
   socket.emit('giveSid', socket.id);
   socket.on('receiveUid', uid=>{
     s.connectedClients[uid] = {id:socket.id};
   })      
   socket.on('follow-add', (data)=>{
-      console.log("여기!!!!!!!!!!\n\n\n\n");
+      
       if(s.connectedClients[data.followed._id]){
         socket.to(s.connectedClients[data.followed._id].id).emit('increase-noti');
         socket.to(s.connectedClients[data.followed._id].id).emit('follow-noti', data.follower.user);
