@@ -31,6 +31,7 @@ io.on('connection', function(socket){
     s.connectedClients[uid] = {id:socket.id};
   })      
   socket.on('follow-add', (data)=>{
+    console.log("여기!!!!!!!!!!\n\n\n\n",data);
       
       if(s.connectedClients[data.followed._id]){
         socket.to(s.connectedClients[data.followed._id].id).emit('increase-noti');
