@@ -12,7 +12,7 @@ require('dotenv').config();
 var server = require('http').createServer(app); //웹 소켓을 위한 새로운 서버를 만든다.
 
 //웹소켓 서버는 3001번에서 listening하고 있다.
-server.listen(3001, "52.231.107.71", function(){
+server.listen("http://52.231.107.71:3001", function(){
   console.log('socket io server listening on port 3001');
 })
 
