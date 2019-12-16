@@ -65,6 +65,7 @@ io.on('connection', function(socket){
     console.log("여기!!!!!!!!!!\n\n\n\n",data);
       
       if(s.connectedClients[data.followed._id]){
+        console.log('*****사용자가 있습니다.', (s.connectedClients[data.followed._id].id));
         socket.to(s.connectedClients[data.followed._id].id).emit('increase-noti');
         socket.to(s.connectedClients[data.followed._id].id).emit('follow-noti', data.follower.user);
       }else{
