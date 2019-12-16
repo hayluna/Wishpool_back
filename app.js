@@ -23,8 +23,8 @@ io.attach(server);
 
 s={};
 s.connectedClients={};
+console.log("여기!!!!!!!!!!\n\n\n\n",io);
 io.on('connection', function(socket){
-  console.log("여기!!!!!!!!!!\n\n\n\n",socket.id);
   socket.emit('giveSid', socket.id);
   socket.on('receiveUid', uid=>{
     s.connectedClients[uid] = {id:socket.id};
