@@ -20,10 +20,11 @@ server.listen(3001, function(){
 //socket.js모듈은 웹서버를 파라미터로 받는 함수이다.
 var io = require('socket.io')(server); // 웹소켓 함수 실행
 io.attach(server);
+
+console.log("여기!!!!!!!!!!\n\n\n\n",server);
 s={};
 s.connectedClients={};
 io.on('connection', function(socket){
-  console.log("여기!!!!!!!!!!\n\n\n\n");
   socket.emit('giveSid', socket.id);
   socket.on('receiveUid', uid=>{
     s.connectedClients[uid] = {id:socket.id};
