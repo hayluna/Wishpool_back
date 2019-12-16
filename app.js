@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 
 //socket연결 및 on, event행동정보가 담긴 socket.js모듈을 불러온다.
 //socket.js모듈은 웹서버를 파라미터로 받는 함수이다.
-var io = require('socket.io'); // 웹소켓 함수 실행
+var io = require('socket.io')({path:'/socket.io'}); // 웹소켓 함수 실행
 io.attach(3001);
 
 s={};
