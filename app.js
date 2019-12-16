@@ -28,7 +28,7 @@ io.attach(3001);
 
 s={};
 s.connectedClients={};
-console.log("여기!!!!!!!!!!\n\n\n\n",io);
+console.log("여기!!!!!!!!!!\n\n\n\n",io.origins(['http://52.231.107.71:3001']));
 io.on('connection', function(socket){
   socket.emit('giveSid', socket.id);
   socket.on('receiveUid', uid=>{
