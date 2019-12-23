@@ -7,7 +7,7 @@ module.exports = () =>{
             mongoose.set('debug', true); // production 모드가 아니면 디버깅 가능하게 설정
         }
 
-        mongoose.connect('mongodb://52.231.107.71:27017',{
+        mongoose.connect('mongodb://localhost:27017',{
             dbName: 'wishlistDB',
         },(error)=>{
             if(error){

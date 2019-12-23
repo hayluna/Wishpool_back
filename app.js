@@ -44,7 +44,7 @@ var server = require('http').createServer(app); //웹 소켓을 위한 새로운
 
 //웹소켓 서버는 3001번에서 listening하고 있다.
 server.listen(3001, function(){
-  console.log('3001번에서 소리질러!!!!');
+  console.log('3001번 웹소켓 서버생성');
 })
 
 //socket연결 및 on, event행동정보가 담긴 socket.js모듈을 불러온다.
@@ -56,7 +56,6 @@ s={};
 s.connectedClients={};
 
 io.on('connection', function(socket){
-  console.log("여기!!!!!!!!!!\n\n\n\n",socket.id);
   socket.emit('giveSid', socket.id);
   socket.on('receiveUid', uid=>{
     s.connectedClients[uid] = {id:socket.id};
