@@ -27,6 +27,15 @@ router.post('/entry', (req, res, next) => {
   // 단방향 해쉬 암호화(해독불가)
   const hash = bcrypt.hashSync(req.body.password, 12);
 
+  let rand = Math.floor(Math.random() * 22)+1;
+  
+  if(rand<10){
+    rand = '0'+rand+'.jpg';
+  }else if(rand<12){
+    rand= rand+'.jpg';
+  }else{
+    rand=rand+'.png';
+  }
   // 미가입 상태일 경우 신규회원 가입 처리
   const user = new User({
 
@@ -38,6 +47,7 @@ router.post('/entry', (req, res, next) => {
     nickName: req.body.nickName,
     birth: req.body.birth,
     entryType: req.body.entryType,
+    profileImgPath: '/assets/samples/avatar-'+rand
 
   });
   user.save()

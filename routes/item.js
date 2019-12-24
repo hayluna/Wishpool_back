@@ -161,6 +161,17 @@ router.get('/count/:id', async(req, res, next)=>{
 router.post('/add', function(req, res, next){
     console.log(req.body);
     //카테고리는 나중에 구현
+    
+    //(임시)아이템사진이 없을경우
+    let rand = Math.floor(Math.random() * 22)+1;
+    if(rand<10){
+        rand = '0'+rand+'.jpg';
+      }else if(rand<12){
+        rand= rand+'.jpg';
+      }else{
+        rand=rand+'.png';
+      }
+    req.body.itemImgPath = '/assets/samples/avatar-'+rand;
     let item = new Item(req.body);
     console.log(item);
     (async()=>{

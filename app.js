@@ -24,11 +24,7 @@ var app = express();
 connect();
 
 //웹소켓통신을 위해서는 쌍방 cors설정이 되어야한다.
-//클라이언트의 주소를 허용한다.
-// var corsOptions = {
-//   origin: '*',};
-
-// app.use(cors(corsOptions));
+//클라이언트의 주소를 허용한다. 서버의 주소를 허용하는 헤더를 붙여 보낸다.
 app.use(cors()) //cors use
 
 app.use(function(req, res, next) {
@@ -48,32 +44,11 @@ server.listen(3001, function(){
 })
 
 //socket연결 및 on, event행동정보가 담긴 socket.js모듈을 불러온다.
-//socket.js모듈은 웹서버를 파라미터로 받는 함수이다.
-var io = require('socket.io')(server); // 웹소켓 함수 실행
-io.attach(server);
+//socket.js모듈은 웹서버를 파라미터로 받는 함수이고, 바로 호출된다.
 
-s={};
-s.connectedClients={};
-
-io.on('connection', function(socket){
-  socket.emit('giveSid', socket.id);
-  socket.on('receiveUid', uid=>{
-    s.connectedClients[uid] = {id:socket.id};
-  })      
-  socket.on('follow-add', (data)=>{
-    console.log("여기!!!!!!!!!!\n\n\n\n",data);
-      
-      if(s.connectedClients[data.followed._id]){
-        console.log('*****사용자가 있습니다.', (s.connectedClients[data.followed._id].id));
-        socket.to(s.connectedClients[data.followed._id].id).emit('increase-noti');
-        socket.to(s.connectedClients[data.followed._id].id).emit('follow-noti', data.follower.user);
-      }else{
-        console.error('해당사용자가 없습니다.');
-      }
-  });
-})
-
-
+//현재 연결중인 클라이언트들을 담을 배열을 생성한다.
+let connectedClients = {}; 
+require('./socket')(server, connectedClients);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

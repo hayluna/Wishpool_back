@@ -14,8 +14,6 @@ router.get('/list/:id', async(req,res,next)=>{
     try {
       let populated = await User.findById(id).populate('followingId').populate('followerId');
       let user = await User.findById(id);
-      console.log('제발여22', populated);
-      console.log('잠좀', user);
       if(user){
         res.json({
           code: 200,
