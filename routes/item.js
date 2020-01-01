@@ -1,9 +1,53 @@
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
 var Item = require('../schemas/item');
 
 const { checkObjectId } = require('./middlewares');
+
+//이미지 업로드용 모듈
+const multer = require('multer')
+const inMemoryStorage = multer.memoryStorage();
+const singleFileUpload = multer({ storage: inMemoryStorage });
+const azureStorage = require('azure-storage');
+const getStream = require('into-stream');
+
+
+// production모드가 아닐 때 dotenv모듈을 통해 환경변수 읽어들인다.
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+//blob관련 클래스
+const blobService = azureStorage.createBlobService(process.env.AZURE_STORAGE_ACCOUNT_NAME, process.env.AZURE_STORAGE_ACCOUNT_ACCESS_KEY); 
+
+//이미지 업로드용 함수들
+uploadFileToBlob = async (directoryPath, file) => {
+ 
+    return new Promise((resolve, reject) => {
+ 
+        const blobName = getBlobName(file.originalname);
+        const stream = getStream(file.buffer);
+        const streamLength = file.buffer.length;
+        // const blobService = azureStorage.createBlobService(process.env.AZURE_STORAGE_ACCOUNT_NAME, process.env.AZURE_STORAGE_ACCOUNT_ACCESS_KEY); 
+        blobService.createBlockBlobFromStream('images', `${directoryPath}/${blobName}`, stream, streamLength, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ filename: blobName, 
+                    originalname: file.originalname, 
+                    size: streamLength, 
+                    path: `images/${directoryPath}/${blobName}`,
+                    url: `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/images/${directoryPath}/${blobName}` });
+            }
+        });
+ 
+    });
+ 
+};
+ 
+const getBlobName = originalName => {
+    const identifier = Math.random().toString().replace(/0\./, ''); // remove "0." from start of string
+    return `${identifier}-${originalName}`;
+};
 
 router.get('/', function (req, res, next) {
   // User.find({})
@@ -88,10 +132,23 @@ router.get('/modify/:id', function(req, res, next){
 
 //modify:id
 //itemModify.vue에서 변경된 내용 DB에 수정반영하기
-router.patch('/modify/:id', async function(req, res, next){
-    console.log('patch\n');
-    //카테고리는 나중에 구현
-    console.log('ppp'+req.body);
+router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function(req, res, next){
+    let image = null;
+    try{
+        image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
+    }catch (error) {
+        console.error(error);
+    }
+    if(image){
+       req.body.itemImgPath = image.url; 
+       req.body.itemImgName = image.filename;
+    }
+    if(req.body.itemPrice == "null"){
+        req.body.itemPrice = null
+    }
+    if(req.body.itemRank == "null"){
+        req.body.itemRank = null
+    }
     try{
         const { id } = req.params;
         //findByIdAndUpdate는 조건식 주지 않고, id값만 첫번재 파라미터로 주면, 해당 객체를 반환해준다.
@@ -111,28 +168,27 @@ router.patch('/modify/:id', async function(req, res, next){
 });
 
 //detail페이지에서 삭제 누르면 실행되는 컨트롤러
-router.delete('/detail/:id', function(req, res, next){
+router.delete('/detail/:id', async function(req, res, next){
     const { id } = req.params;
     (async()=>{
         try{
-            await Item.findByIdAndRemove(id).exec();
-            try{
-                const items = await Item.find().exec();
-                res.json({
-                    code: 200,
-                    msg: '아이템 삭제 성공',
-                    items
+            await Item.findByIdAndRemove({_id:id}, function(err, docs){
+                blobService.deleteBlobIfExists('images', `items/${docs.itemImgName}`,function(error, result){
+                    if(error){
+                        console.error('blob삭제 실패');
+                    }else{
+                        console.log('blob 삭제 성공')
+                    }
                 })
-            }catch(e){
-                console.error(e);
-                next(e);
-            }   
+            });
+            res.json({code:200, msg:'아이템삭제성공'});
         }catch(e){
             console.error(e);
             next(e); 
         }
         
     })();
+    
 })
 
 //프로필에서 해당유저의 아이템 갯수 호출하는 API
@@ -158,20 +214,34 @@ router.get('/count/:id', async(req, res, next)=>{
 })
 
 //itemAdd.vue에서 생성된 내용 DB에 저장하기
-router.post('/add', function(req, res, next){
-    console.log(req.body);
-    //카테고리는 나중에 구현
-    
-    //(임시)아이템사진이 없을경우
-    let rand = Math.floor(Math.random() * 22)+1;
-    if(rand<10){
-        rand = '0'+rand+'.jpg';
-      }else if(rand<12){
-        rand= rand+'.jpg';
-      }else{
-        rand=rand+'.png';
-      }
-    req.body.itemImgPath = '/assets/samples/avatar-'+rand;
+router.post('/add', singleFileUpload.single('thumbnail'), async function(req, res, next){
+    let image = null;
+    try{
+        image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
+    }catch (error) {
+        console.error(error);
+    }
+    if(image){
+       req.body.itemImgPath = image.url; 
+       req.body.itemImgName = image.filename;
+       console.log('HHHH', image.itemImgName)
+    }else{
+        let rand = Math.floor(Math.random() * 22)+1;
+        if(rand<10){
+            rand = '0'+rand+'.jpg';
+        }else if(rand<12){
+            rand= rand+'.jpg';
+        }else{
+            rand=rand+'.png';
+        }
+        req.body.itemImgPath = '/assets/samples/avatar-'+rand;
+    }
+    if(req.body.itemPrice == 'undefined'){
+        req.body.itemPrice = null
+    }
+    if(req.body.itemRank == "null"){
+        req.body.itemRank = null
+    }
     let item = new Item(req.body);
     console.log(item);
     (async()=>{

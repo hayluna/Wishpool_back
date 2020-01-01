@@ -6,6 +6,49 @@ const { verifyToken, isLoggedIn } = require('./middlewares');
 const nodemailer = require('nodemailer');
 
 var User = require('../schemas/user');
+//이미지 업로드용 모듈
+const multer = require('multer')
+const inMemoryStorage = multer.memoryStorage();
+const singleFileUpload = multer({ storage: inMemoryStorage });
+const azureStorage = require('azure-storage');
+const getStream = require('into-stream');
+
+// production모드가 아닐 때 dotenv모듈을 통해 환경변수 읽어들인다.
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+//blob관련 클래스
+const blobService = azureStorage.createBlobService(process.env.AZURE_STORAGE_ACCOUNT_NAME, process.env.AZURE_STORAGE_ACCOUNT_ACCESS_KEY); 
+
+//이미지 업로드용 함수들
+uploadFileToBlob = async (directoryPath, file) => {
+ 
+    return new Promise((resolve, reject) => {
+ 
+        const blobName = getBlobName(file.originalname);
+        const stream = getStream(file.buffer);
+        const streamLength = file.buffer.length;
+        // const blobService = azureStorage.createBlobService(process.env.AZURE_STORAGE_ACCOUNT_NAME, process.env.AZURE_STORAGE_ACCOUNT_ACCESS_KEY); 
+        blobService.createBlockBlobFromStream('images', `${directoryPath}/${blobName}`, stream, streamLength, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ filename: blobName, 
+                    originalname: file.originalname, 
+                    size: streamLength, 
+                    path: `images/${directoryPath}/${blobName}`,
+                    url: `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/images/${directoryPath}/${blobName}` });
+            }
+        });
+ 
+    });
+ 
+};
+ 
+const getBlobName = originalName => {
+    const identifier = Math.random().toString().replace(/0\./, ''); // remove "0." from start of string
+    return `${identifier}-${originalName}`;
+};
 
 router.get('/', (req, res, next) => {
   User.find({})
@@ -196,44 +239,22 @@ router.get('/profile', verifyToken, (req, res) => {
 
 //modify:id
 //itemModify.vue에서 변경된 내용 DB에 수정반영하기
-router.patch('/profile/modify/:id', async function(req, res, next){
-  const { id } = req.params;
-  const user = req.body;
-  console.log('here', user);
+router.patch('/profile/modify/:id', singleFileUpload.single('thumbnail'), async function(req, res, next){
+  let image = null;
   try{
-      //findByIdAndUpdate는 조건식 주지 않고, id값만 첫번재 파라미터로 주면, 해당 객체를 반환해준다.
-      const newUser = await User.findByIdAndUpdate(id, user, {new: true}).exec();
-      //new:true를 설정해야 업데이트 된 객체를 반환
-      //설정하지 않으면 업데이트 되기 전의 객체를 반환
-      if(newUser){
-        
-      console.log('there', newUser);
-        res.status(201).json({
-          code: 200,
-          msg: '회원 프로필 정보 수정 성공',
-          newUser
-        });
-      }else{
-        res.json({
-          code: 500,
-          msg: '회원 프로필 정보 수정 실패'
-        })
-      }
-  }catch(e){
-      console.error(e);
-      next(e);
+      image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
+  }catch (error) {
+      console.error(error);
   }
-});
+  if(image){
+    req.body.profileImgPath = image.url;
+    req.body.profileImgName = image.filename;
+  }
 
-//modify:id
-//itemModify.vue에서 변경된 내용 DB에 수정반영하기
-router.patch('/profile/modify/:id', async function(req, res, next){
   const { id } = req.params;
-  const user = req.body;
-  console.log('here', user);
   try{
       //findByIdAndUpdate는 조건식 주지 않고, id값만 첫번재 파라미터로 주면, 해당 객체를 반환해준다.
-      const newUser = await User.findByIdAndUpdate(id, user, {new: true}).exec();
+      const newUser = await User.findByIdAndUpdate(id, req.body, {new: true}).exec();
       //new:true를 설정해야 업데이트 된 객체를 반환
       //설정하지 않으면 업데이트 되기 전의 객체를 반환
       if(newUser){

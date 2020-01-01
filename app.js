@@ -11,6 +11,7 @@ var itemRouter = require('./routes/item');
 var usersRouter = require('./routes/users');
 var dummyRouter = require('./routes/dummy');
 var followRouter = require('./routes/follow');
+var uploadRouter = require('./routes/upload');
 // 몽고디비 : ./schemas/index.js의 module.exports로 내보낸 함수 실행
 var connect = require('./schemas');
 
@@ -67,6 +68,7 @@ app.use('/item', itemRouter);
 app.use('/users', usersRouter);
 app.use('/test', dummyRouter);
 app.use('/follow', followRouter);
+app.use('/upload', uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
