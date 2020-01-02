@@ -90,31 +90,36 @@ router.get('/list/:id', checkObjectId, async function(req, res, next) {
     
 });
 
-//itemList.vue의 items에 넣을 내용
-router.get('/list/', async function(req, res, next) {
+//detail:id
+//itemDetail.vue의 각 페이지 item에 들어갈 내용
+router.get('/detail/:id', async function(req, res, next){
     try{
-        let items = await Item.find().sort({createdAt: -1}).exec();
+        const res = await Item.findOne({ _id: req.params.id });
         res.json({
             code: 200,
-            msg: '아이템 조회 완료',
-            items
-        });
-    }catch(e) {
+            msg: '아이템 조회성공',
+            item
+        })
+    }catch(e){
         console.error(e);
+        next(e);
     }
 });
 
-//detail:id
-//itemDetail.vue의 각 페이지 item에 들어갈 내용
-router.get('/detail/:id', function(req, res, next){
-    Item.findOne({ _id: req.params.id }).populate('categoryId')
-    .then(item=>{
-        res.json(item)
-    })
-    .catch(e=>{
+router.patch('/toggle/:id', async function(req, res, next){
+    try{
+        const { id } = req.params;
+        await Item.findByIdAndUpdate(id, req.body, {new: true}).exec();
+        const items = await Item.find( {userId:req.body.userId}).sort({createdAt: -1}).exec();
+        res.json({
+            code: 200,
+            msg: '아이템 수정 성공',
+            items
+        });
+    }catch(e){
         console.error(e);
         next(e);
-    })
+    }
 });
 
 //modify:id
@@ -135,7 +140,9 @@ router.get('/modify/:id', function(req, res, next){
 router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function(req, res, next){
     let image = null;
     try{
-        image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
+        if(req.file){
+            image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
+        }
     }catch (error) {
         console.error(error);
     }
@@ -143,29 +150,27 @@ router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function
        req.body.itemImgPath = image.url; 
        req.body.itemImgName = image.filename;
     }
-    if(req.body.itemPrice == "null"){
-        req.body.itemPrice = null
-    }
-    if(req.body.itemRank == "null"){
-        req.body.itemRank = null
-    }
     try{
         const { id } = req.params;
-        //findByIdAndUpdate는 조건식 주지 않고, id값만 첫번재 파라미터로 주면, 해당 객체를 반환해준다.
-        const item = await Item.findByIdAndUpdate(id, req.body, {new: true}).exec();
-        //new:true를 설정해야 업데이트 된 객체를 반환
-        //설정하지 않으면 업데이트 되기 전의 객체를 반환
-        console.log(item);
-        res.status(201).json({
+        await Item.findByIdAndUpdate(id, req.body, {new: true}, function(err, docs){
+            blobService.deleteBlobIfExists('images', `items/${req.body.prevImgName}`,function(error, result){
+                if(error){
+                    console.error('blob삭제 실패');
+                }else{
+                    console.log('blob 삭제 성공')
+                }
+            })
+        }).exec();
+        res.json({
             code: 200,
             msg: '아이템 수정 성공',
-            item
         });
     }catch(e){
         console.error(e);
         next(e);
     }
 });
+
 
 //detail페이지에서 삭제 누르면 실행되는 컨트롤러
 router.delete('/detail/:id', async function(req, res, next){
@@ -190,7 +195,34 @@ router.delete('/detail/:id', async function(req, res, next){
     })();
     
 })
-
+//detail페이지에서 삭제 누르면 실행되는 컨트롤러
+router.patch('/delete/:id', async function(req, res, next){
+    const { id } = req.params;
+    (async()=>{
+        try{
+            await Item.findByIdAndRemove({_id:id}, function(err, docs){
+                blobService.deleteBlobIfExists('images', `items/${docs.itemImgName}`,function(error, result){
+                    if(error){
+                        console.error('blob삭제 실패');
+                    }else{
+                        console.log('blob 삭제 성공')
+                    }
+                })
+            });
+            const items = await Item.find({userId:req.body.userId}).sort({createdAt: -1}).exec();
+            res.json({
+                code:200, 
+                msg:'아이템삭제성공',
+                items
+            });
+        }catch(e){
+            console.error(e);
+            next(e); 
+        }
+        
+    })();
+    
+})
 //프로필에서 해당유저의 아이템 갯수 호출하는 API
 router.get('/count/:id', async(req, res, next)=>{
     const { id } = req.params;
@@ -214,7 +246,8 @@ router.get('/count/:id', async(req, res, next)=>{
 })
 
 //itemAdd.vue에서 생성된 내용 DB에 저장하기
-router.post('/add', singleFileUpload.single('thumbnail'), async function(req, res, next){
+router.post('/insert/:id', singleFileUpload.single('thumbnail'), async function(req, res, next){
+    const { id } = req.params;
     let image = null;
     try{
         image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
@@ -224,38 +257,32 @@ router.post('/add', singleFileUpload.single('thumbnail'), async function(req, re
     if(image){
        req.body.itemImgPath = image.url; 
        req.body.itemImgName = image.filename;
-       console.log('HHHH', image.itemImgName)
-    }else{
-        let rand = Math.floor(Math.random() * 22)+1;
-        if(rand<10){
-            rand = '0'+rand+'.jpg';
-        }else if(rand<12){
-            rand= rand+'.jpg';
-        }else{
-            rand=rand+'.png';
-        }
-        req.body.itemImgPath = '/assets/samples/avatar-'+rand;
+    // }else{
+    //     let rand = Math.floor(Math.random() * 22)+1;
+    //     if(rand<10){
+    //         rand = '0'+rand+'.jpg';
+    //     }else if(rand<12){
+    //         rand= rand+'.jpg';
+    //     }else{
+    //         rand=rand+'.png';
+    //     }
+    //     req.body.itemImgPath = '/assets/samples/avatar-'+rand;
     }
-    if(req.body.itemPrice == 'undefined'){
-        req.body.itemPrice = null
-    }
-    if(req.body.itemRank == "null"){
-        req.body.itemRank = null
-    }
+   
     let item = new Item(req.body);
     console.log(item);
     (async()=>{
         try {
             await item.save();
-            let items =[];
+            // let items =[];
             try {
                 //저장 후 아이템 리스트로 가게 된다. 가기 전 아이템 리스트 업데이트가 필요하다.
                 //새로운 아이템 리스트를 반환한다.
-                items = await Item.find().exec();
+                // items = await Item.find({userId: id}).exec();
                 res.json({
                     code: 200,
                     msg: '아이템 저장성공',
-                    items
+                    // items
                 })
             } catch (e) {
                 console.error(e);
