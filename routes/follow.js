@@ -10,16 +10,16 @@ var User = require('../schemas/user');
 //(혜은) follow리스트 조회용
 router.get('/list/:id', async(req,res,next)=>{
     const { id } = req.params;
-    console.log('팔로우 목록조회', id);
     try {
       let populated = await User.findById(id).populate('followingId').populate('followerId');
-      let user = await User.findById(id);
-      if(user){
+      let profile = await User.findById(id);
+      if(profile){
         res.json({
           code: 200,
           msg: '회원 및 팔로우 정보 조회 성공',
-          populated,
-          user
+          followers: populated.followerId,
+          followings: populated.followingId,
+          profile
         });
       }else{
         res.json({
