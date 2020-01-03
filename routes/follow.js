@@ -58,12 +58,10 @@ router.get('/list/:id', async(req,res,next)=>{
     }
   });
 
-  router.get('/searchPhone', async(req,res,next)=>{
-    const { searchQuery, id } = req.query;
-  //id값으로 찾고, 있으면 리턴, 없으면
-  console.log('search', id);
+  router.get('/search', async(req,res,next)=>{
+    const { query, id } = req.query;
   try {
-      let matchUsers = await User.find({phone: {$regex : '.*'+searchQuery+'.*'}, _id: {$ne: id}}).populate('followingId').populate('followerId').exec();
+      let matchUsers = await User.find({phone: {$regex : '.*'+query+'.*'}, _id: {$ne: id}}).populate('followingId').populate('followerId').exec();
       if(matchUsers.length != 0){
           console.log(matchUsers);
           res.json({
