@@ -6,8 +6,7 @@ module.exports = () =>{
         if(process.env.NODE_ENV !== 'production'){
             mongoose.set('debug', true); // production 모드가 아니면 디버깅 가능하게 설정
         }
-
-        mongoose.connect('mongodb://localhost:27017',{
+        mongoose.connect(`mongodb+srv://admin:${process.env.DB_ADMIN_PWD}@cluster-wishlist-0ktaz.azure.mongodb.net/test?retryWrites=true&w=majority`,{
             dbName: 'wishlistDB',
         },(error)=>{
             if(error){

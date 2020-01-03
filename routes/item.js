@@ -139,6 +139,7 @@ router.get('/modify/:id', function(req, res, next){
 //itemModify.vue에서 변경된 내용 DB에 수정반영하기
 router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function(req, res, next){
     let image = null;
+    console.log(req.body);
     try{
         if(req.file){
             image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
@@ -152,7 +153,8 @@ router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function
     }
     try{
         const { id } = req.params;
-        await Item.findByIdAndUpdate(id, req.body, {new: true}, function(err, docs){
+        console.log(req.body);
+        let test = await Item.findByIdAndUpdate(id, req.body, {new: true}, function(err, docs){
             blobService.deleteBlobIfExists('images', `items/${req.body.prevImgName}`,function(error, result){
                 if(error){
                     console.error('blob삭제 실패');
@@ -161,6 +163,7 @@ router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function
                 }
             })
         }).exec();
+        console.log(test);
         res.json({
             code: 200,
             msg: '아이템 수정 성공',
@@ -201,6 +204,9 @@ router.patch('/delete/:id', async function(req, res, next){
     (async()=>{
         try{
             await Item.findByIdAndRemove({_id:id}, function(err, docs){
+                if(err){
+                    console.error('not found');
+                }
                 blobService.deleteBlobIfExists('images', `items/${docs.itemImgName}`,function(error, result){
                     if(error){
                         console.error('blob삭제 실패');
