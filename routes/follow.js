@@ -80,60 +80,23 @@ router.get('/list/:id', async(req,res,next)=>{
   }
 
 });
-router.patch('/add/:id', async(req,res,next)=>{
+
+router.patch('/update/:id', async(req,res,next)=>{
   const { id } = req.params; //내 id
   const { me, other } = req.body; 
-try {
-    await User.findByIdAndUpdate(id, me, {new:true}).exec();
-    await User.findByIdAndUpdate(other._id, other, {new:true}).exec();
-    res.json({
-      code: 200,
-      msg: 'followingId에 추가완료',
-    });
-} catch (e) {
-    res.json({
-      code: 503,
-      msg: 'followingId에 추가실패'
-    });
-    console.error(e);
-}
-
-});
-
-router.patch('/add2/:id', async function(req, res, next){
-  //:id : 내가 팔로우하려는 아디
-  //req.body : 나의 유저객체
-  try{
-      //내 팔로잉 목록이 갱신된 객체로 덮어쓰기
-      const { id } = req.params;
-      const { user, followUser } = req.body; //프론트에서 넘어온 갱신된 유저 객체들
-      
-      //내가 팔로잉하는 상대의 팔로워목록이 갱신된 객체로 덮어쓰기
-      const followingUser = await User.findByIdAndUpdate(followUser._id, followUser, {new:true}).exec();
-      const newUser = await User.findByIdAndUpdate(user._id, user, {new:true}).exec();
-      //new:true를 설정해야 업데이트 된 객체를 반환
-      //설정하지 않으면 업데이트 되기 전의 객체를 반환
-      console.log('1', newUser);
-      console.log('2', followingUser);
-      
-      let populated = await User.findById(id).populate('followingId').populate('followerId').exec();
-      
-      if(newUser&&populated&&followingUser){
-        res.status(201).json({
-          code: 200,
-          msg: '팔로우 수정 성공',
-          populated,
-          newUser,
-        });
-      }else{
-        res.json({
-          code: 503,
-          msg: '찾는 사용자가 없습니다.',
-        })
-      }
-  }catch(e){
+  try {
+      await User.findByIdAndUpdate(id, me, {new:true}).exec();
+      await User.findByIdAndUpdate(other._id, other, {new:true}).exec();
+      res.json({
+        code: 200,
+        msg: 'followingId에 추가완료',
+      });
+  } catch (e) {
+      res.json({
+        code: 503,
+        msg: 'followingId에 추가실패'
+      });
       console.error(e);
-      next(e);
   }
 });
 
