@@ -86,10 +86,28 @@ router.get('/list/:id', checkObjectId, async function(req, res, next) {
     }catch(e) {
         console.error(e);
     }
-    
-    
 });
-
+//특정유저의 리스트 불러오기
+router.get('/othersList/:id', checkObjectId, async function(req, res, next) {
+    const { id } = req.params;
+    try{
+        let items = await Item.find( {userId : id, visibleTo:'public'} ).sort({createdAt: -1}).exec();
+        if(!items){
+            res.json({
+                code: 404,
+                msg: '조회 결과가 없습니다.',
+            })
+            return;
+        }
+        res.json({
+            code: 200,
+            msg: '아이템 조회 완료',
+            items
+        });
+    }catch(e) {
+        console.error(e);
+    }
+});
 //detail:id
 //itemDetail.vue의 각 페이지 item에 들어갈 내용
 router.get('/detail/:id', async function(req, res, next){
@@ -203,18 +221,14 @@ router.patch('/delete/:id', async function(req, res, next){
     const { id } = req.params;
     (async()=>{
         try{
-            await Item.findByIdAndRemove({_id:id}, function(err, docs){
-                if(err){
-                    console.error('not found');
+            await Item.findByIdAndRemove({_id:id});
+            await blobService.deleteBlobIfExists('images', `items/${req.body.itemImgName}`,function(error, result){
+                if(error){
+                    console.error('blob삭제 실패');
+                }else{
+                    console.log('blob 삭제 성공')
                 }
-                blobService.deleteBlobIfExists('images', `items/${docs.itemImgName}`,function(error, result){
-                    if(error){
-                        console.error('blob삭제 실패');
-                    }else{
-                        console.log('blob 삭제 성공')
-                    }
-                })
-            });
+            })
             const items = await Item.find({userId:req.body.userId}).sort({createdAt: -1}).exec();
             res.json({
                 code:200, 
