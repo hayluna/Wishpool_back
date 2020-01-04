@@ -11,14 +11,14 @@ var User = require('../schemas/user');
 router.get('/list/:id', async(req,res,next)=>{
     const { id } = req.params;
     try {
-      let populated = await User.findById(id).populate('followingId').populate('followerId');
-      let profile = await User.findById(id);
+      let profile = await User.findById(id).populate('followingId').populate('followerId');
+      // let profile = await User.findById(id);
       if(profile){
         res.json({
           code: 200,
           msg: '회원 및 팔로우 정보 조회 성공',
-          followers: populated.followerId,
-          followings: populated.followingId,
+          // followers: populated.followerId,
+          // followings: populated.followingId,
           profile
         });
       }else{
@@ -80,8 +80,27 @@ router.get('/list/:id', async(req,res,next)=>{
   }
 
 });
+router.patch('/add/:id', async(req,res,next)=>{
+  const { id } = req.params; //내 id
+  const { me, other } = req.body; 
+try {
+    await User.findByIdAndUpdate(id, me, {new:true}).exec();
+    await User.findByIdAndUpdate(other._id, other, {new:true}).exec();
+    res.json({
+      code: 200,
+      msg: 'followingId에 추가완료',
+    });
+} catch (e) {
+    res.json({
+      code: 503,
+      msg: 'followingId에 추가실패'
+    });
+    console.error(e);
+}
 
-router.patch('/add/:id', async function(req, res, next){
+});
+
+router.patch('/add2/:id', async function(req, res, next){
   //:id : 내가 팔로우하려는 아디
   //req.body : 나의 유저객체
   try{
