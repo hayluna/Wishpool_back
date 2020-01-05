@@ -157,7 +157,6 @@ router.get('/modify/:id', function(req, res, next){
 //itemModify.vue에서 변경된 내용 DB에 수정반영하기
 router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function(req, res, next){
     let image = null;
-    console.log(req.body);
     try{
         if(req.file){
             image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
@@ -169,19 +168,20 @@ router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function
        req.body.itemImgPath = image.url; 
        req.body.itemImgName = image.filename;
     }
+   if(req.body.itemPrice == 'null'){
+       req.body.itemPrice = '';
+   }
     try{
         const { id } = req.params;
-        console.log(req.body);
-        let test = await Item.findByIdAndUpdate(id, req.body, {new: true}, function(err, docs){
-            blobService.deleteBlobIfExists('images', `items/${req.body.prevImgName}`,function(error, result){
-                if(error){
-                    console.error('blob삭제 실패');
-                }else{
-                    console.log('blob 삭제 성공')
-                }
-            })
-        }).exec();
+        const test = await Item.findByIdAndUpdate(id, req.body, {new: true}).exec();
         console.log(test);
+        await blobService.deleteBlobIfExists('images', `items/${req.body.prevImgName}`,function(error, result){
+            if(error){
+                console.error('blob삭제 실패');
+            }else{
+                // console.log('blob 삭제 성공')
+            }
+        });
         res.json({
             code: 200,
             msg: '아이템 수정 성공',
@@ -203,7 +203,7 @@ router.delete('/detail/:id', async function(req, res, next){
                     if(error){
                         console.error('blob삭제 실패');
                     }else{
-                        console.log('blob 삭제 성공')
+                        // console.log('blob 삭제 성공')
                     }
                 })
             });
@@ -226,7 +226,7 @@ router.patch('/delete/:id', async function(req, res, next){
                 if(error){
                     console.error('blob삭제 실패');
                 }else{
-                    console.log('blob 삭제 성공')
+                    // console.log('blob 삭제 성공')
                 }
             })
             const items = await Item.find({userId:req.body.userId}).sort({createdAt: -1}).exec();
@@ -270,7 +270,9 @@ router.post('/insert/:id', singleFileUpload.single('thumbnail'), async function(
     const { id } = req.params;
     let image = null;
     try{
-        image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
+        if(req.file){
+            image = await uploadFileToBlob('items', req.file); // images is a directory in the Azure container
+        }
     }catch (error) {
         console.error(error);
     }
@@ -290,15 +292,11 @@ router.post('/insert/:id', singleFileUpload.single('thumbnail'), async function(
     }
    
     let item = new Item(req.body);
-    console.log(item);
+    // console.log(item);
     (async()=>{
         try {
             await item.save();
-            // let items =[];
             try {
-                //저장 후 아이템 리스트로 가게 된다. 가기 전 아이템 리스트 업데이트가 필요하다.
-                //새로운 아이템 리스트를 반환한다.
-                // items = await Item.find({userId: id}).exec();
                 res.json({
                     code: 200,
                     msg: '아이템 저장성공',
