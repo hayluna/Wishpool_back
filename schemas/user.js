@@ -19,75 +19,79 @@ const UserSchema = new Schema({
         required: true,
         unique: true,
     },
-    // userName:{
-    //     type:String,
-    //     required: true,
-    // },
-    // email:{
-    //     type:String,
-    //     required: true,
-    //     // unique: true, //테스트를 위해 잠시 주석처리. 꼭해제할것
-    // },
+    userName:{
+        type:String,
+        required: false,
+    },
+    email:{
+        type:String,
+        required: false,
+        // unique: true, //테스트를 위해 잠시 주석처리. 꼭해제할것
+    },
     hashedPassword:{
         type:String,
         required: true,
     },
-    // phone:{
-    //     type:String,
-    //     required: true,
-    //     // unique: true, //테스트를 위해 잠시 주석처리. 꼭 해제할것
-    // },
-    // nickName:{
-    //     type:String,
-    //     required: true,
-    // },
-    // birth:{
-    //     type:Date,
-    //     required: true,
-    // },
-    // profileImgPath:{
-    //     type:String,
-    //     required: true,
-    //     unique: false,
-    //     default:'기본값'
-    // },
-    // profileImgName:{
-    //     type:String,
-    //     required: true,
-    //     default:'기본값'
-    // },
-    // profileMsg:{
-    //     type:String,
-    //     required: false,
-    // },
-    // followingId:[{
-    //     type: ObjectId,
-    //     ref: 'User',
-    //     unique: true
-    // }],
-    // followerId:[{
-    //     type: ObjectId,
-    //     ref: 'User',
-    //     unique: true,
-    // }],
-    // entryType:{
-    //     type:String,
-    //     required: true,
-    // },
-    // userState:{
-    //     type:Boolean,
-    //     required: true,
-    //     default: true
-    // },
-    // createdAt:{
-    //     type:Date,
-    //     required: false,
-    //     default: Date.now,
-    // },
-    // deleteAt:{
-    //     type:Date,
-    //     required: false,
-    // }
+    phone:{
+        type:String,
+        required: true,
+        // unique: true, //테스트를 위해 잠시 주석처리. 꼭 해제할것
+    },
+    nickname:{
+        type:String,
+        required: false,
+    },
+    address:{
+        type:String,
+        required: false,
+    },
+    birth:{
+        type:Date,
+        required: false,
+    },
+    profileImgPath:{
+        type:String,
+        required: false,
+        unique: false,
+        default:'기본값'
+    },
+    profileImgName:{
+        type:String,
+        required: false,
+        default:'기본값'
+    },
+    profileMsg:{
+        type:String,
+        required: false,
+    },
+    followingId:[{
+        type: ObjectId,
+        ref: 'User',
+        unique: false
+    }],
+    followerId:[{
+        type: ObjectId,
+        ref: 'User',
+        unique: false,
+    }],
+    entryType:{
+        type:String,
+        required: false,
+    },
+    userState:{
+        type:Boolean,
+        required: false,
+        default: true
+    },
+    createdAt:{
+        type:Date,
+        required: false,
+        default: Date.now,
+    },
+    deleteAt:{
+        type:Date,
+        required: false,
+    }
 });
 
 UserSchema.methods.setPassword = async function(password){
@@ -96,7 +100,6 @@ UserSchema.methods.setPassword = async function(password){
 };
 
 UserSchema.methods.checkPassword = async function(password){
-    console.log('aaaaaa', password);
     const result = await bcrypt.compare(password, this.hashedPassword);
     return result;
 };
@@ -104,7 +107,6 @@ UserSchema.methods.checkPassword = async function(password){
 UserSchema.methods.serialize = function(){
     const data = this.toJSON();
     delete data.hashedPassword;
-    console.log('hhh', data);
     return data;
 }
 

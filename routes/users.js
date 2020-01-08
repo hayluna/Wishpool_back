@@ -73,6 +73,10 @@ router.post('/register', async (req, res, next) => {
     .max(20)
     .required(),
     password: Joi.string().required(),
+    phone: Joi.string(),
+    nickname: Joi.string(),
+    address: Joi.string(),
+    entryType: Joi.string()
   });
   const result = Joi.validate(req.body, schema);
   if(result.error){
@@ -82,7 +86,7 @@ router.post('/register', async (req, res, next) => {
     })
   }
 
-  const { userId, password } = req.body;
+  const { userId, password, phone, nickname, address, entryType } = req.body;
   try {
     // userId가 이미 존재하는지 확인
     const exists = await User.findByUserId(userId);
@@ -92,7 +96,7 @@ router.post('/register', async (req, res, next) => {
         msg: '이미 존재하는 사용자 입니다. 다른 아이디를 입력해주세요'
       })
     }
-    const user = new User({ userId });
+    const user = new User({ userId, phone, nickname, address, entryType });
     await user.setPassword(password); //비밀번호 hash화 설정
     await user.save(); // DB에 저장
 
