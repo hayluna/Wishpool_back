@@ -51,38 +51,23 @@ module.exports = (server, connectedClients) =>{
             //1. 클라이언트로부터 data(user정보)를 받는다.
             //2. 받은 user정보의 _id값으로 현재 connectedClients인지 확인한다.
             console.log('현재 연결된 클라이언트들', connectedClients)
-            if(connectedClients[data.followed._id]){ // 현재 connectedClient가 맞다면,
-                console.log('*****사용자가 있습니다.', (connectedClients[data.followed._id]));
+            if(connectedClients[data.other._id]){ // 현재 connectedClient가 맞다면,
+                console.log('*****사용자가 있습니다.', (connectedClients[data.other._id]));
                 //해당 사용자의 socket.id에게 to메소드를 보낸다.
-                const { user } = data.follower;
-
-                //DB알림목록에 저장
-                const newNoti = {
-                    type: 'noti-follow',
-                    by: user.userName,
-                    userId: user._id,
-                    profileImgPath: user.profileImgPath
+                try {
+                    const newFollowNoti = {
+                        type: 'noti-follow',
+                        by: me.userName,
+                        userId: me._id,
+                        profileImgPath: me.profileImgPath,
+                        profileImgName : me.profileImgName,
+                    };
+                    socket.to(connectedClients[data.other._id]).emit('follow-noti', newFollowNoti); //알림목록에 follow-noti를 발생시키는 이벤트 발생
+                } catch (e) {
+                    console.error(e);
                 }
-                let noti = new Noti(newNoti);
-                let notis = [];
-                (async()=>{
-                    try {
-                        await noti.save();
-                        try {
-                            //저장 후 아이템 리스트로 가게 된다. 가기 전 아이템 리스트 업데이트가 필요하다.
-                            //새로운 아이템 리스트를 반환한다.
-                            notis = await Noti.find().exec();
-                            socket.to(connectedClients[data.followed._id]).emit('follow-noti', notis); //알림목록에 follow-noti를 발생시키는 이벤트 발생
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    } catch (e) {
-                        console.error(e);
-                        next(e);
-                    }
-                })();
-                socket.to(connectedClients[data.followed._id]).emit('increase-noti'); //클라이언트의 noti갯수를 늘리라는 이벤트 발생
-                socket.to(connectedClients[data.followed._id]).emit('add-follower', user);
+                socket.to(connectedClients[data.other._id]).emit('increase-noti'); //클라이언트의 noti갯수를 늘리라는 이벤트 발생
+                socket.to(connectedClients[data.other._id]).emit('add-follower', user);
             }else{
                 console.error('해당사용자가 없습니다.');
             }

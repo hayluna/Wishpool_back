@@ -1,4 +1,6 @@
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 const { Schema } = mongoose;
 const { Types: { ObjectId } } = Schema;
@@ -11,82 +13,117 @@ const { Types: { ObjectId } } = Schema;
 // 이 userSchema객체를 이용해 find, update, insert 등을 실행할 수 있다. 자바스크립트 프로그래밍적으로 유용
 
 //사용자 콜렉션 구조 모델 구현
-const userSchema = new Schema({
+const UserSchema = new Schema({
     userId:{
         type:String,
         required: true,
         unique: true,
     },
-    userName:{
+    // userName:{
+    //     type:String,
+    //     required: true,
+    // },
+    // email:{
+    //     type:String,
+    //     required: true,
+    //     // unique: true, //테스트를 위해 잠시 주석처리. 꼭해제할것
+    // },
+    hashedPassword:{
         type:String,
         required: true,
     },
-    email:{
-        type:String,
-        required: true,
-        // unique: true, //테스트를 위해 잠시 주석처리. 꼭해제할것
-    },
-    password:{
-        type:String,
-        required: true,
-    },
-    phone:{
-        type:String,
-        required: true,
-        // unique: true, //테스트를 위해 잠시 주석처리. 꼭 해제할것
-    },
-    nickName:{
-        type:String,
-        required: true,
-    },
-    birth:{
-        type:Date,
-        required: true,
-    },
-    profileImgPath:{
-        type:String,
-        required: true,
-        unique: false,
-        default:'기본값'
-    },
-    profileImgName:{
-        type:String,
-        required: true,
-        default:'기본값'
-    },
-    profileMsg:{
-        type:String,
-        required: false,
-    },
-    followingId:[{
-        type: ObjectId,
-        ref: 'User',
-        unique: true
-    }],
-    followerId:[{
-        type: ObjectId,
-        ref: 'User',
-        unique: true,
-    }],
-    entryType:{
-        type:String,
-        required: true,
-    },
-    userState:{
-        type:Boolean,
-        required: true,
-        default: true
-    },
-    createdAt:{
-        type:Date,
-        required: false,
-        default: Date.now,
-    },
-    deleteAt:{
-        type:Date,
-        required: false,
-    }
+    // phone:{
+    //     type:String,
+    //     required: true,
+    //     // unique: true, //테스트를 위해 잠시 주석처리. 꼭 해제할것
+    // },
+    // nickName:{
+    //     type:String,
+    //     required: true,
+    // },
+    // birth:{
+    //     type:Date,
+    //     required: true,
+    // },
+    // profileImgPath:{
+    //     type:String,
+    //     required: true,
+    //     unique: false,
+    //     default:'기본값'
+    // },
+    // profileImgName:{
+    //     type:String,
+    //     required: true,
+    //     default:'기본값'
+    // },
+    // profileMsg:{
+    //     type:String,
+    //     required: false,
+    // },
+    // followingId:[{
+    //     type: ObjectId,
+    //     ref: 'User',
+    //     unique: true
+    // }],
+    // followerId:[{
+    //     type: ObjectId,
+    //     ref: 'User',
+    //     unique: true,
+    // }],
+    // entryType:{
+    //     type:String,
+    //     required: true,
+    // },
+    // userState:{
+    //     type:Boolean,
+    //     required: true,
+    //     default: true
+    // },
+    // createdAt:{
+    //     type:Date,
+    //     required: false,
+    //     default: Date.now,
+    // },
+    // deleteAt:{
+    //     type:Date,
+    //     required: false,
+    // }
 });
 
-module.exports = mongoose.model('User', userSchema); //User객체이름으로  userSchema라는 모델구조를 매핑해줌.
+UserSchema.methods.setPassword = async function(password){
+    const hash = await bcrypt.hash(password, 10);
+    this.hashedPassword = hash;
+};
+
+UserSchema.methods.checkPassword = async function(password){
+    console.log('aaaaaa', password);
+    const result = await bcrypt.compare(password, this.hashedPassword);
+    return result;
+};
+
+UserSchema.methods.serialize = function(){
+    const data = this.toJSON();
+    delete data.hashedPassword;
+    console.log('hhh', data);
+    return data;
+}
+
+UserSchema.methods.generateToken = function(){
+    const token = jwt.sign({
+        _id: this.id,
+        username: this.username
+    },
+    process.env.JWT_SECRET,
+    {
+        expiresIn: '7d', //7일동안 유효
+    },
+);
+  return token;  
+};
+
+UserSchema.statics.findByUserId = function(userId){
+    return this.findOne({ userId });
+};
+
+module.exports = mongoose.model('User', UserSchema); //User객체이름으로  userSchema라는 모델구조를 매핑해줌.
 //index.js에서 매핑했지만, 몽구스에서는 여기서 해줌

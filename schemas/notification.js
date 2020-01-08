@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const { Types: { ObjectId } } = Schema;
 
-const notiSchema = new Schema({
+const NotiSchema = new Schema({
     type: {
         type: String,
         require: true
@@ -37,13 +37,23 @@ const notiSchema = new Schema({
     profileImgPath:{
         type: String,
         required: false,
-        default: 'itemImgPath'
+        default: 'profileImgPath'
+    },
+    profileImgName:{
+        type: String,
+        required: false,
+        default: 'profileImgName'
     },
     itemImgPath:{
         type: String,
         required: false,
         default: 'itemImgPath'
+    },
+    itemImgName:{
+        type: String,
+        required: false,
+        default: 'itemImgName'
     }
 });
 
-module.exports = mongoose.model('Noti', notiSchema); 
+module.exports = mongoose.model('Noti', NotiSchema); 

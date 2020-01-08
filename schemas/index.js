@@ -36,4 +36,5 @@ module.exports = () =>{
     require('./group'); 
     require('./item'); 
     require('./category');
+    require('./notification');
 }

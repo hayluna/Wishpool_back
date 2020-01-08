@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verifyToken, isLoggedIn } = require('./middlewares');
 const nodemailer = require('nodemailer');
+const Joi = require('joi');
 
 var User = require('../schemas/user');
 //이미지 업로드용 모듈
@@ -63,56 +64,100 @@ router.get('/', (req, res, next) => {
 
 // 회원가입
 // 회원 가입과 동시에 로그인하게끔 처리
-router.post('/entry', (req, res, next) => {
-  // 기존에 가입된 회원인지 확인(나중에 처리)
-
-
-  // 단방향 해쉬 암호화(해독불가)
-  const hash = bcrypt.hashSync(req.body.password, 12);
-
-  let rand = Math.floor(Math.random() * 22)+1;
-  
-  if(rand<10){
-    rand = '0'+rand+'.jpg';
-  }else if(rand<12){
-    rand= rand+'.jpg';
-  }else{
-    rand=rand+'.png';
-  }
-  // 미가입 상태일 경우 신규회원 가입 처리
-  const user = new User({
-
-    userName: req.body.userName,
-    userId: req.body.userId,
-    password: hash,
-    email: req.body.email,
-    phone: req.body.phone,
-    nickName: req.body.nickName,
-    birth: req.body.birth,
-    entryType: req.body.entryType,
-    profileImgPath: '/assets/samples/avatar-'+rand
-
+router.post('/register', async (req, res, next) => {
+  // Request Body 검증하기
+  const schema = Joi.object().keys({
+    userId: Joi.string()
+    .alphanum()
+    .min(3)
+    .max(20)
+    .required(),
+    password: Joi.string().required(),
   });
-  user.save()
-    .then(function (result) {
-      console.log(result);
-     
-      const token = jwt.sign({
-        userId: user.userId,
-      }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
-        issuer: 'wishlist'
-      });
-
-
-      return res.json({ code: 200, result: token });
+  const result = Joi.validate(req.body, schema);
+  if(result.error){
+    return res.json({
+      code: 400,
+      msg: '유효성 검사 실패. 유효하지 않은 가입입니다. 다시 시도하세요.'
     })
-    .catch(function (err) {
-      console.error(err);
-      next(err);
-    });
-});
+  }
 
+  const { userId, password } = req.body;
+  try {
+    // userId가 이미 존재하는지 확인
+    const exists = await User.findByUserId(userId);
+    if(exists){
+      return res.json({
+        code: 409,
+        msg: '이미 존재하는 사용자 입니다. 다른 아이디를 입력해주세요'
+      })
+    }
+    const user = new User({ userId });
+    await user.setPassword(password); //비밀번호 hash화 설정
+    await user.save(); // DB에 저장
+
+    //바로 로그인처리
+    const token = user.generateToken();
+    const payload ={
+      newUser: user.serialize(), //응답할 데이터에서 hashedPassword필드 제거
+      token
+    };
+    
+    res.json({
+      code: 200,
+      msg: '회원가입 성공',
+      payload
+    })
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+  // // 단방향 해쉬 암호화(해독불가)
+  // const hash = bcrypt.hashSync(password, 12);
+
+  // // let rand = Math.floor(Math.random() * 22)+1;
+  
+  // // if(rand<10){
+  // //   rand = '0'+rand+'.jpg';
+  // // }else if(rand<12){
+  // //   rand= rand+'.jpg';
+  // // }else{
+  // //   rand=rand+'.png';
+  // // }
+  
+  // // 미가입 상태일 경우 신규회원 가입 처리
+  // const user = new User({
+  //   userName: req.body.userName,
+  //   userId: req.body.userId,
+  //   password: hash,
+  //   email: req.body.email,
+  //   phone: req.body.phone,
+  //   nickName: req.body.nickName,
+  //   birth: req.body.birth,
+  //   entryType: req.body.entryType,
+  //   // profileImgPath: '/assets/samples/avatar-'+rand
+  // });
+  // try {
+  //   const newUser = await user.save();
+  //   if(newUser){
+  //     const token = jwt.sign({
+  //       userId: user.userId,
+  //     }, process.env.JWT_SECRET, {
+  //       expiresIn: '1d',
+  //       issuer: 'wishlist'
+  //     });
+  //     const payload = {
+  //       user: newUser,
+  //       token
+  //     }
+  //     //로그인정보 보내기
+  //     res.json({ code: 200, msg: '회원가입성공', payload });
+  //   };
+  // } catch (e) {
+  //   console.error(e);
+  //     next(e);
+  // }
+});
 
 //(혜은) 회원가입 테스트용
 router.post('/temp', async (req, res, next) => {
@@ -155,41 +200,90 @@ router.get('/list/:id', async (req, res, next) => {
 
 
 // 로그인 처리
-router.post('/login', (req, res, next) => {
+router.post('/login', async (req, res, next) => {
+  const { userId, password } = req.body;
+  // userId, password가 없으면 에러 처리
+  if(!userId || !password){
+    return res.json({
+      code: 401,
+      msg: 'id 혹은 password를 입력하지 않으셨습니다.'
+    });
+  }
 
-  User.findOne({ userId: req.body.userId, userState: true }, function (err, user) {
-    // 에러발생 처리
-    if (err) {
-      console.error('에러발생');
-      next(err);
+  try {
+    const user = await User.findByUserId(userId);
+    //계정이 존재하지 않으면 에러처리
+    if(!user){
+      return res.json({
+        code: 401,
+        msg: '계정이 존재하지 않습니다.'
+      });
     }
-    // 일치하는 사용자가 있을 경우
-    if (user) {
-      const comparePwd = bcrypt.compareSync(req.body.password, user.password);
-      if (comparePwd) {
-
-        const token = jwt.sign({
-          userId: user.userId,
-        }, process.env.JWT_SECRET, {
-          expiresIn: '1d',
-          issuer: 'wishlist'
-        });
-
-        console.log(token);
-        return res.json({ code: 200, result: token });
-
-      } else {
-        console.log('불일치' + comparePwd);
-        return res.json({ code: 500, message: '암호가 일치하지 않습니다' });
-      }
-
-      // 일치하는 사용자가 없을 경우
-    } else if (!user) {
-      console.log('미등록 사용자');
-      return res.json({ code: 500, message: '등록된 사용자가 아닙니다' });
+    console.log('asdf', user);
+    const valid = await user.checkPassword(password);
+    //잘못된 비밀번호
+    if(!valid){
+      return res.json({
+        code: 402,
+        msg: '비밀번호가 일치하지 않습니다.'
+      });
     }
-  })
-});
+    
+    const token = user.generateToken();
+    user.serialize();
+    const payload ={
+      user: user.serialize(),
+      token
+    }
+    res.json({
+      code: 200,
+      msg : '로그인에 성공하였습니다.',
+      payload
+    });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+  // try {
+  //   const user = await User.findOne({ userId: req.body.userId, userState: true }, function (err, user) {
+  //     // 에러발생 처리
+  //     if (err) {
+  //       console.error('에러발생');
+  //       next(err);
+  //     }
+  //     // 일치하는 사용자가 있을 경우
+  //     if (user) {
+  //       const comparePwd = bcrypt.compareSync(req.body.password, user.password);
+  //       if (comparePwd) {
+  
+  //         const token = jwt.sign({
+  //           userId: user.userId,
+  //         }, process.env.JWT_SECRET, {
+  //           expiresIn: '1d',
+  //           issuer: 'wishlist'
+  //         });
+  
+  //         console.log(token);
+  //         const payload = {user, token}
+  //         return res.json({ code: 200, payload });
+  
+  //       } else {
+  //         console.log('불일치' + comparePwd);
+  //         return res.json({ code: 500, message: '암호가 일치하지 않습니다' });
+  //       }
+  
+  //       // 일치하는 사용자가 없을 경우
+  //     } else if (!user) {
+  //       console.log('미등록 사용자');
+  //       return res.json({ code: 500, message: '등록된 사용자가 아닙니다' });
+  //     }
+  //   })
+  // } catch (e) {
+  //   console.error(e);
+  //   next(e);
+  // }
+    
+  });
 
 
 //(혜은) 회원 프로필정보 조회
@@ -394,18 +488,29 @@ router.patch('/deleteAccount', verifyToken, (req, res) => {
 
 })
 
-router.get('/check', verifyToken, async (req,res)=>{
+router.get('/check', verifyToken, async (req,res,next)=>{
   //여기까지 넘어왔다면, 인증된 사용자
   //decoded의 값으로 user에서 _id값 찾아 보내준다.
-  let user = await User.findOne({userId:req.decoded.userId});
-  if(user){
+  console.log(req.decoded);
+  try {
+    const data = await User.findById({_id:req.decoded._id});
+    const user = data.serialize();
+    console.log('user', user);
+    if(!user){
+      return res.json({
+        code: 401,
+        msg: '로그인이 유효하지 않습니다.'
+      });
+    }
     res.json({
       code: 200,
-      message: '로그인이 유효한 사용자입니다.',
-      userId: user._id
+      msg: '로그인이 유효한 사용자입니다.',
+      user
     });
+  } catch (e) {
+    console.error(e);
+    next(e)
   }
- 
 });
 
 //
