@@ -8,11 +8,16 @@ const NotiSchema = new Schema({
         type: String,
         require: true
     },
-    by: {
+    from: {
         type:String,
-        required: true,
+        required: false,
     },
-    userId:{
+    fromObjectId:{
+        type:ObjectId,
+        required: false,
+        ref: 'User'
+    },
+    to:{
         type:ObjectId,
         reqruied: false,
         ref: 'User'
@@ -26,7 +31,7 @@ const NotiSchema = new Schema({
         type: String,
         required: false,
     },
-    date: {
+    createdAt: {
         type: Date,
         default: Date.now
     },

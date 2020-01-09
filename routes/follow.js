@@ -37,11 +37,9 @@ router.get('/list/:id', async(req,res,next)=>{
     const { searchQuery, id } = req.query; 
     //searchQuery값으로 찾는다. id는 내 아이디이다.
     try {
-      console.log(id);
       //$ne : not equal, 나는 제외한다.
       let matchUsers = await User.find({userId: {$regex : '.*'+searchQuery+'.*'}, _id: {$ne: id}}).populate('followingId').populate('followerId');
         if(matchUsers.length != 0){
-            console.log(matchUsers);
             res.json({
                 code: 200,
                 msg: '일치하는 사용자를 찾았습니다',
