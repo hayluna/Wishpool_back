@@ -63,7 +63,7 @@ module.exports = (server, connectedClients) =>{
                         profileImgPath: me.profileImgPath,
                         profileImgName : me.profileImgName,
                     };
-                    socket.to(connectedClients[other._id]).emit('increase-noti'); //알림목록에 follow-noti를 발생시키는 이벤트 발생
+                    socket.to(connectedClients[other._id]).emit('noti-fired'); //알림목록에 follow-noti를 발생시키는 이벤트 발생
                 } catch (e) {
                     console.error(e);
                 }

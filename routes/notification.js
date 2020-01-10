@@ -10,7 +10,7 @@ var Noti = require('../schemas/notification');
 router.get('/list/:id', async(req, res, next)=>{
     const { id } = req.params;
     try {
-        const notis = await Noti.find({to:id}).exec();
+        const notis = await Noti.find({to:id}).sort({createdAt: -1}).exec();
         if(notis){
             res.json({
                 code: 200,
@@ -62,8 +62,22 @@ router.patch('/toggle', async(req, res, next)=>{
     res.json({
         code: 200,
         msg: 'noti 읽음처리 성공',
-        notiList:req.body
+        // notiList:req.body
     })
+});
+
+router.delete('/remove/:id', async(req, res, next)=>{
+    const { id } = req.params;
+    try {
+        await Noti.findByIdAndDelete(id);
+        res.json({
+            code: 200,
+            msg: '알림 삭제 성공'
+        })
+    } catch (e) {
+        console.error(e);
+        next(e);
+    }
 });
 
 module.exports = router;

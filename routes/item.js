@@ -128,11 +128,11 @@ router.patch('/toggle/:id', async function(req, res, next){
     try{
         const { id } = req.params;
         await Item.findByIdAndUpdate(id, req.body, {new: true}).exec();
-        const items = await Item.find( {userId:req.body.userId}).sort({createdAt: -1}).exec();
+        // const items = await Item.find( {userId:req.body.userId}).sort({createdAt: -1}).exec();
         res.json({
             code: 200,
             msg: '아이템 수정 성공',
-            items
+            // items
         });
     }catch(e){
         console.error(e);
@@ -229,11 +229,11 @@ router.patch('/delete/:id', async function(req, res, next){
                     // console.log('blob 삭제 성공')
                 }
             })
-            const items = await Item.find({userId:req.body.userId}).sort({createdAt: -1}).exec();
+            // const items = await Item.find({userId:req.body.userId}).sort({createdAt: -1}).exec();
             res.json({
                 code:200, 
                 msg:'아이템삭제성공',
-                items
+                // items
             });
         }catch(e){
             console.error(e);
