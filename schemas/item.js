@@ -66,12 +66,18 @@ const ItemSchema = new Schema({
         type:ObjectId,
         required: true,
         ref: 'User'
+    },
+    categoryId: {
+        type: ObjectId,
+        required: false,
+        default: 'primary',
+        ref:'Category'
+    },
+    groupId:{
+        type: ObjectId,
+        required: false,
+        ref: 'Group'
     }
-    // categoryId: {
-    //     type: ObjectId,
-    //     required: true,
-    //     ref:'Category'
-    // },
 
 });
 

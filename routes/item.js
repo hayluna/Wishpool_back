@@ -174,7 +174,6 @@ router.patch('/modify/:id', singleFileUpload.single('thumbnail'), async function
     try{
         const { id } = req.params;
         const test = await Item.findByIdAndUpdate(id, req.body, {new: true}).exec();
-        console.log(test);
         await blobService.deleteBlobIfExists('images', `items/${req.body.prevImgName}`,function(error, result){
             if(error){
                 console.error('blob삭제 실패');

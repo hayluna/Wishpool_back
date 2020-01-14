@@ -79,13 +79,14 @@ router.get('/list/:id', async(req,res,next)=>{
 
 });
 
-router.patch('/update/:id', async(req,res,next)=>{
+router.patch('/add/:id', async(req,res,next)=>{
   const { id } = req.params; //내 id
   const { me, other } = req.body; 
   try {
-      await User.findByIdAndUpdate(id, me, {new:true}).exec();
-      await User.findByIdAndUpdate(other._id, other, {new:true}).exec();
-      res.json({
+      const newMe = await User.findByIdAndUpdate(id, me, {new:true}).exec();
+      const newOther = await User.findByIdAndUpdate(other._id, other, {new:true}).exec();
+      
+      return res.json({
         code: 200,
         msg: 'followingId에 추가완료',
       });
@@ -93,6 +94,25 @@ router.patch('/update/:id', async(req,res,next)=>{
       res.json({
         code: 503,
         msg: 'followingId에 추가실패'
+      });
+      console.error(e);
+  }
+});
+
+router.patch('/remove/:id', async(req,res,next)=>{
+  const { id } = req.params; //내 id
+  const { me, other } = req.body; 
+  try {
+      const newMe = await User.findByIdAndUpdate(id, me, {new:true}).exec();
+      const newOther = await User.findByIdAndUpdate(other._id, other, {new:true}).exec();
+      return res.json({
+        code: 200,
+        msg: 'followingId에 삭제완료',
+      });
+  } catch (e) {
+      res.json({
+        code: 503,
+        msg: 'followingId에 삭제실패'
       });
       console.error(e);
   }

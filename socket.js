@@ -51,24 +51,15 @@ module.exports = (server, connectedClients) =>{
             //1. 클라이언트로부터 data(user정보)를 받는다.
             //2. 받은 user정보의 _id값으로 현재 connectedClients인지 확인한다.
             const { me, other } = data;
-            console.log('\n\n\n팔로잉발생. 현재 연결된 클라이언트들', connectedClients)
+            console.log('팔로잉발생. 현재 연결된 클라이언트들', connectedClients)
             if(connectedClients[other._id]){ // 현재 connectedClient가 맞다면,
-                console.log('*****사용자가 있습니다.', (connectedClients[other._id]));
-                //해당 사용자의 socket.id에게 to메소드를 보낸다.
+                console.log('사용자가 있습니다.', (connectedClients[other._id]));
                 try {
-                    const newFollowNoti = {
-                        type: 'noti-follow',
-                        by: me.nickname,
-                        userId: me._id,
-                        profileImgPath: me.profileImgPath,
-                        profileImgName : me.profileImgName,
-                    };
+                    //해당 사용자의 socket.id에게 to메소드를 보낸다.
                     socket.to(connectedClients[other._id]).emit('noti-fired'); //알림목록에 follow-noti를 발생시키는 이벤트 발생
                 } catch (e) {
                     console.error(e);
                 }
-                // socket.to(connectedClients[data.other._id]).emit('increase-noti'); //클라이언트의 noti갯수를 늘리라는 이벤트 발생
-                // socket.to(connectedClients[data.other._id]).emit('add-follower', user);
             }else{
                 console.error('해당사용자가 없습니다.');
             }

@@ -19,7 +19,7 @@ const UserSchema = new Schema({
         required: true,
         unique: true,
     },
-    userName:{
+    username:{
         type:String,
         required: false,
     },
@@ -53,12 +53,10 @@ const UserSchema = new Schema({
         type:String,
         required: false,
         unique: false,
-        default:'기본값'
     },
     profileImgName:{
         type:String,
         required: false,
-        default:'기본값'
     },
     profileMsg:{
         type:String,
