@@ -70,7 +70,6 @@ const ItemSchema = new Schema({
     categoryId: {
         type: ObjectId,
         required: false,
-        default: 'primary',
         ref:'Category'
     },
     groupId:{
