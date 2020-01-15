@@ -29,6 +29,13 @@ connect();
 //클라이언트의 주소를 허용한다. 서버의 주소를 허용하는 헤더를 붙여 보낸다.
 app.use(cors()) //cors use
 
+var targetPath = 'DeftWxPSmh2rfk-utDpkc75w4suxW-CnAYajHnMYXB0';
+var returnValue = 'DeftWxPSmh2rfk-utDpkc75w4suxW-CnAYajHnMYXB0.YK-nj0Rj5X_HLRTP1xL5domWVq8iAw-TwAXZ6TtFqAQ';
+
+app.get(targetPath, function(req, res){
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end(returnValue);
+})
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
