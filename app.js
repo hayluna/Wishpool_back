@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const https = require('https'); //ssl
-
+const fs = require('fs'); //ssl
 var categoryRouter = require('./routes/category');
 var groupRouter = require('./routes/group');
 var indexRouter = require('./routes/index');
