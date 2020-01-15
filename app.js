@@ -74,7 +74,7 @@ ws_server.listen(3001, function(){
 
 //현재 연결중인 클라이언트들을 담을 배열을 생성한다.
 let connectedClients = {}; 
-require('./socket')(server, connectedClients);
+require('./socket')(ws_server, connectedClients);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
