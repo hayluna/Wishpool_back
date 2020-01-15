@@ -24,9 +24,9 @@ var cors = require('cors') //cors설정
 var app = express();
 
 // Certificate
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/wish.codeplot.co.kr/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/wish.codeplot.co.kr/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/wish.codeplot.co.kr/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/chain.pem', 'utf8');
 
 const credentials = {
 	key: privateKey,
