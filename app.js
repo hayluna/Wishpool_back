@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const https = require('https'); //ssl
 
 var categoryRouter = require('./routes/category');
 var groupRouter = require('./routes/group');
@@ -21,6 +22,22 @@ require('dotenv').config();
 var cors = require('cors') //cors설정
 
 var app = express();
+
+// Certificate
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/wish.codeplot.co.kr/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/wish.codeplot.co.kr/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/wish.codeplot.co.kr/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
+});
 
 // 몽고디비: express객체 생긴 후 몽고디비 연결
 connect();
