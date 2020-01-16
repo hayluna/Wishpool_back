@@ -56,7 +56,8 @@ module.exports = (server, connectedClients) =>{
                 console.log('사용자가 있습니다.', (connectedClients[other._id]));
                 try {
                     //해당 사용자의 socket.id에게 to메소드를 보낸다.
-                    socket.to(connectedClients[other._id]).emit('noti-fired'); //알림목록에 follow-noti를 발생시키는 이벤트 발생
+                    const payload = { me, other };
+                    socket.to(connectedClients[other._id]).emit('noti-fired', payload); //알림목록에 follow-noti를 발생시키는 이벤트 발생
                 } catch (e) {
                     console.error(e);
                 }
