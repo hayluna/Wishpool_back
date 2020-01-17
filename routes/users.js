@@ -93,7 +93,7 @@ router.post('/register', async (req, res, next) => {
     })
   }
 
-  const { userId, 
+  let { userId, 
     password, 
     phone,
     nickname, 
