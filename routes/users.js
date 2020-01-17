@@ -92,7 +92,17 @@ router.post('/register', async (req, res, next) => {
       msg: '유효하지 않은 가입입니다. 다시 시도하세요.'
     })
   }
-
+  let rand = Math.floor(Math.random() * 22)+1;
+  
+  if(rand<10){
+    rand = '0'+rand+'.jpg';
+  }else if(rand<12){
+    rand= rand+'.jpg';
+  }else{
+    rand=rand+'.png';
+  }
+  profileImgPath = '/assets/samples/avatar-'+rand;
+  profileImgName = 'avatar-'+rand;
   const { userId, 
     password, 
     phone,
