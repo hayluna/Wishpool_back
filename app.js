@@ -5,7 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const https = require('https'); //ssl
 const fs = require('fs'); //ssl
-var history = require('connect-history-api-fallback'); //History API for SPA
+var history = require('vue-history-api-fallback'); //History API for SPA
+
 var categoryRouter = require('./routes/category');
 var groupRouter = require('./routes/group');
 var indexRouter = require('./routes/index');
@@ -37,17 +38,16 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   return next();
 });
-app.use(history({
-  rewrites:[
-    { 
-      from: /^\/othersDetail\/.*$/,
-      to: function(context) {
-        console.log("*************"+context.parsedUrl.pathname);
-        return '/item/' + context.parsedUrl.pathname;
-      }
-    }
+
+const VueRouter = require('vue-router');
+let router = new VueRouter({
+  mode: 'history',
+  routes:[
+    { path:'/item/othersDetail/:itemId', component:OthersItemDetail, name:'othersItemDetail'},
   ]
-}));
+})
+
+app.use(history{router});
 
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/privkey.pem', 'utf8');
