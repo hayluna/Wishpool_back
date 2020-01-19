@@ -47,7 +47,7 @@ let router = new VueRouter({
   ]
 })
 
-app.use(history{router});
+app.use(history({router}));
 
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/privkey.pem', 'utf8');
