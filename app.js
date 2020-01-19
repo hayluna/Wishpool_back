@@ -37,7 +37,16 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   return next();
 });
-app.use(history());
+app.use(history({
+  rewrites:[
+    { 
+      from: /^\/othersDetail\/.*$/,
+      to: function(context) {
+        console.log(context.parsedUrl.pathname);
+        return '/item' + context.parsedUrl.pathname;
+    }
+  ]
+}));
 
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/privkey.pem', 'utf8');
