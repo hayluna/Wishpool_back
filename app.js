@@ -39,15 +39,16 @@ app.use(function(req, res, next) {
   return next();
 });
 
-// const VueRouter = require('vue-router');
-// let router = new VueRouter({
-//   mode: 'history',
-//   routes:[
-//     { path:'/item/othersDetail/:itemId',  name:'othersItemDetail'},
-//   ]
-// })
+const VueRouter = require('vue-router');
+let router = new VueRouter({
+  mode: 'history',
+  routes:[
+    // { path:'/item/othersDetail/:itemId',  name:'othersItemDetail'},
+  ]
+})
 
 app.use(history({
+  router,
   redirect:[
      { from : /^\/othersDetail\/.*$/,
     to(parsedUrl){
