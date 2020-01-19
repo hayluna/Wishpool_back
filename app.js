@@ -42,8 +42,8 @@ app.use(history({
     { 
       from: /^\/othersDetail\/.*$/,
       to: function(context) {
-        console.log(context.parsedUrl.pathname);
-        return '/item' + context.parsedUrl.pathname;
+        console.log("*************"+context.parsedUrl.pathname);
+        return '/item/' + context.parsedUrl.pathname;
       }
     }
   ]
