@@ -39,15 +39,23 @@ app.use(function(req, res, next) {
   return next();
 });
 
-const VueRouter = require('vue-router');
-let router = new VueRouter({
-  mode: 'history',
-  routes:[
-    { path:'/item/othersDetail/:itemId', component:OthersItemDetail, name:'othersItemDetail'},
-  ]
-})
+// const VueRouter = require('vue-router');
+// let router = new VueRouter({
+//   mode: 'history',
+//   routes:[
+//     { path:'/item/othersDetail/:itemId',  name:'othersItemDetail'},
+//   ]
+// })
 
-app.use(history({router}));
+app.use(history({
+  redirect:[
+     { from : /^\/othersDetail\/.*$/,
+    to(parsedUrl){
+      console.log('***'+parsedUrl);
+      return '/othersDetail/'+parsedUrl.pathname;
+    } }
+  ]
+}));
 
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/privkey.pem', 'utf8');
