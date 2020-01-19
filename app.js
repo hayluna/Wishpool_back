@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const https = require('https'); //ssl
 const fs = require('fs'); //ssl
+var history = require('connect-history-api-fallback'); //History API for SPA
 var categoryRouter = require('./routes/category');
 var groupRouter = require('./routes/group');
 var indexRouter = require('./routes/index');
@@ -36,6 +37,7 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   return next();
 });
+app.use(history());
 
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/privkey.pem', 'utf8');
