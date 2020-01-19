@@ -44,6 +44,7 @@ app.use(history({
       to: function(context) {
         console.log(context.parsedUrl.pathname);
         return '/item' + context.parsedUrl.pathname;
+      }
     }
   ]
 }));
