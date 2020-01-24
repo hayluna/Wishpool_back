@@ -65,8 +65,8 @@ https설정이 완료되었으면,
 * Wishpoop_front에서도 로컬 경로를 주석처리하고, 도메인주소를 입력 한다.
 ```
 #for example
-http://localhost:3000 => https://yourdomain.com #80번 포트는 생략가능하다
-http://localhost:3001 => https://yourdomain.com:3001 #for web socket interaction
+http://localhost:3000 => https://yourdomain.com              #80번 포트는 생략가능하다
+http://localhost:3001 => https://yourdomain.com:3001         #for web socket interaction
 ```
 코드를 수정했으면, git으로 ```remote repository```에 올린다.
 ```
