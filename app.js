@@ -38,6 +38,8 @@ app.use(function(req, res, next) {
   return next();
 });
 
+/* 배포용 코드 */
+//SSL설정
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/privkey.pem', 'utf8');
 const certificate = fs.readFileSync('/etc/letsencrypt/live/api-wish.codeplot.co.kr/cert.pem', 'utf8');
@@ -63,19 +65,15 @@ httpsServer.listen(443, () => {
 });
 
 // 웹소켓 
-var ws_server = require('https').createServer(credentials, app); //웹 소켓을 위한 새로운 서버를 만든다.
-
-//웹소켓 서버는 3001번에서 listening하고 있다.
+var ws_server = require('https').createServer(credentials, app); 
 ws_server.listen(3001, function(){
   console.log('3001번 웹소켓 서버생성');
 })
-//socket연결 및 on, event행동정보가 담긴 socket.js모듈을 불러온다.
-//socket.js모듈은 웹서버를 파라미터로 받는 함수이고, 바로 호출된다.
-
-//현재 연결중인 클라이언트들을 담을 배열을 생성한다.
 let connectedClients = {}; 
 require('./socket')(ws_server, connectedClients);
+/*END OF 배포코드 */
 
+/*개발용 코드*/
 // var server = require('http').createServer(app); //웹 소켓을 위한 새로운 서버를 만든다.
 
 // //웹소켓 서버는 3001번에서 listening하고 있다.
@@ -88,7 +86,7 @@ require('./socket')(ws_server, connectedClients);
 // //현재 연결중인 클라이언트들을 담을 배열을 생성한다.
 // let connectedClients = {}; 
 // require('./socket')(server, connectedClients);
-
+/*END OF 개발코드 */
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
