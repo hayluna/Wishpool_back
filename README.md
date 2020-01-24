@@ -59,7 +59,7 @@ nodemon start
 * https://docs.google.com/document/d/1P0t-45iBzoPQygmE_YyIpqa3dGf_pThunQtJa_GCDGc/edit
 
 https설정이 완료되었으면,
-* bin/www.js의 포트번호를 80번으로 바꾸고,
+* bin/www의 포트번호를 80번으로 바꾸고,
 * https credential관련 코드 주석해제하고,
 * websocket 서버를 https로 만든 것은 주석해제하고 http로 만든것을 주석을 처리한다.
 * Wishpoop_front에서도 로컬 경로를 주석처리하고, 도메인주소를 입력 한다.
