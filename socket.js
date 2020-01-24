@@ -42,7 +42,7 @@ module.exports = (server, connectedClients) =>{
             if(uid){
                 connectedClients[uid]= socket.id;
             }
-            console.log('\n\n\n연결된 클라이언트 목록',connectedClients);
+            console.log('연결된 클라이언트 목록',connectedClients);
             // socket.emit('confirmConnection', connectedClients);
         })      
 
@@ -66,6 +66,7 @@ module.exports = (server, connectedClients) =>{
             }
         });
 
+        //사용x
         socket.on('follow-remove', (data)=>{
             const { user, followUser } = data;
             if(connectedClients[followUser._id]){
@@ -73,6 +74,13 @@ module.exports = (server, connectedClients) =>{
             }
         });
 
+        socket.on('request-purchase', data=>{
+            const { resUser } = data;
+            if(connectedClients[resUser._id]){
+                console.log('yes!!!!!!!!!!');
+                socket.to(connectedClients[resUser._id]).emit('purchase-requested', data);
+            }
+        });
         socket.on('remove-noti', id=>{
             (async()=>{
                 try{
@@ -100,7 +108,8 @@ module.exports = (server, connectedClients) =>{
                 console.error(e);
                 next(e);
             }   
-        })
+        });
+
         
     })
 }

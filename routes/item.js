@@ -311,6 +311,19 @@ router.post('/insert/:id', singleFileUpload.single('thumbnail'), async function(
     })();
 });
 
-
+router.get('/itemOne/:id', async(req, res, next)=>{
+    const { id } = req.params;
+    console.log('hey', id);
+    try {
+        const item = await Item.findById(id).populate('userId');
+        res.json({
+            code: 200,
+            item
+        });
+    } catch (e) {
+        console.error(e);
+    }
+    
+})
 
 module.exports = router;
