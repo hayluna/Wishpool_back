@@ -9,10 +9,10 @@ Express.js로 만든 node서버에 RESTful API와 web socket을 만들고, 이�
 ### Prerequisites
 
 * node: v12.1.0
-* Mongo Atalas M0 tier(무료)
+* Mongo Atlas M0 tier(무료)
 
 ```
-# Node.js설치 (브라우저에서)
+# Node.js설치 
 # Mongo Atlas 
 1) 접속 후 M0 tier가입 
 2) DB생성
@@ -24,7 +24,7 @@ mongoose.connect(`mongodb+srv://<yourMongoDBInfo>`,
 4) Mongo Atlas에서 white list에서 이 DB를 이용할 PC의 IP를 다 추가해준다.
 ```
 
-### Development(local)
+### Development(Local)
 
 해당 프로젝트 fork한 후, dependency 설치
 
@@ -56,6 +56,7 @@ nodemon start
 * Wishpool_front에서 로컬 경로를 주석처리하고, 만든 VM의 public ip를 넣어준다. (포트번호는 유지)
 
 만약 도메인을 구매하고, SSL설정을 한다면, 다음의 문서를 참고하여 설정한다.
+https://docs.google.com/document/d/1P0t-45iBzoPQygmE_YyIpqa3dGf_pThunQtJa_GCDGc/edit
 https설정이 완료되었으면,
 * bin/www.js의 포트번호를 80번으로 바꾸고,
 * https credential관련 코드 주석해제하고,
@@ -87,19 +88,20 @@ cd Wishpool_back
 npm start 혹은 npm start & #for a background processing, add & at the end
 ```
 
+### putty가 꺼져도 서버를 항상 실행하기
+```
+npm install pm2
+```
 
-
-### Build
-
+```pm2```는 root권한에서만 제대로 작동한다.
 
 ```
-#for prouction
-yarn build 혹은 npm run build
+sudo su #root권한 얻기
+<암호입력>
+pm2 start bin/www #Wishpool_back 디렉토리 안에서 입력
 ```
-### Deploy to Azure Storage
-* VS Code extension 중 Azure Storage 검색 후 설치한다.
-* 빌드 된 ```dist```폴더위에 ```마우스 우클릭 - Deploy to Static Website```
-* ```스토리지 계정 선택``` 혹은 ```새 계정 생성``` 후 선택(새 스토리지 생성시 ```정적 웹 사이트 설정```해야함)
-* 기존 ```$web``` 컨테이너에 이미 배포된 것이 있다면, ```Delete and Deploy```
-* 배포가 끝나면 우측하단 알림창에 ```browse website``` 클릭하면 배포된 것을 확인할 수있따.
 
+서버를 끄고 싶다면 
+```
+pm2 delete www #역시 root권한에서 실행되어야 종료된다. 
+```
